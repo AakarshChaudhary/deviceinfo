@@ -160,11 +160,11 @@ const BatteryRing = ({
   const statusText = useMemo(() => {
     switch (status) {
       case Battery.BatteryState.CHARGING:
-        return "CHARGING";
+        return <Text style={{ color: "#16A34A" }}><Feather name="zap" /> CHARGING</Text>;
       case Battery.BatteryState.FULL:
         return "FULL";
       case Battery.BatteryState.UNPLUGGED:
-        return "UNPLUGGED";
+        return <Text style={{ color: "#F59E0B" }}>UNPLUGGED</Text>;
       case progress <= 0.2 && Battery.BatteryState.UNKNOWN:
         return "LOW";
       default:
@@ -205,7 +205,7 @@ const BatteryRing = ({
       <View style={styles.centerContent}>
         <Text style={styles.level}>{label}</Text>
         <Text style={styles.caption}>
-          <Feather name="zap" /> {statusText}
+          {statusText}
         </Text>
       </View>
     </Animated.View>
@@ -217,7 +217,7 @@ export default Page;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: "40%",
+    marginTop: "35%",
     alignItems: "center",
   },
   ringWrapper: {
@@ -239,11 +239,13 @@ const styles = StyleSheet.create({
     marginTop: 6,
     fontSize: 13,
     fontWeight: "700",
-    color: "green",
+    color: "#4B5563",
     letterSpacing: 1,
-  },  powerSaving: {
+  },
+  powerSaving: {
     marginTop: 20,
     fontSize: 14,
     fontWeight: "600",
     color: "#4B5563",
-  },});
+  },
+});
