@@ -1,8 +1,10 @@
 import { Feather } from "@expo/vector-icons";
 import * as Battery from "expo-battery";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { Animated, Easing, StyleSheet, Text, View } from "react-native";
 import Svg, { Circle } from "react-native-svg";
+
+import { useBatteryStatus } from "../../components/hooks/useBatteryStatus";
 
 const AnimatedCircle: any = Animated.createAnimatedComponent(Circle);
 
@@ -10,59 +12,7 @@ const SIZE = 260;
 const STROKE_WIDTH = 13;
 
 const Page = () => {
-  const [batteryLevel, setBatteryLevel] = useState(0);
-  const [batteryState, setBatteryState] = useState<Battery.BatteryState>(
-    Battery.BatteryState.UNKNOWN,
-  );
-  const [powerSaving, setPowerSaving] = useState(false);
-
-  useEffect(() => {
-    let mounted = true;
-
-    const load = async () => {
-      const [level, state, lowPowerMode] = await Promise.all([
-        Battery.getBatteryLevelAsync(),
-        Battery.getBatteryStateAsync(),
-        Battery.isLowPowerModeEnabledAsync(),
-      ]);
-      if (!mounted) return;
-      if (level >= 0) setBatteryLevel(level);
-      setBatteryState(state);
-      setPowerSaving(lowPowerMode);
-    };
-
-    load();
-
-    const intervalId = setInterval(() => {
-      load();
-    }, 15000);
-
-    const levelSubscription = Battery.addBatteryLevelListener(
-      ({ batteryLevel: nextLevel }) => {
-        if (nextLevel >= 0) setBatteryLevel(nextLevel);
-      },
-    );
-
-    const stateSubscription = Battery.addBatteryStateListener(
-      ({ batteryState: nextState }) => {
-        setBatteryState(nextState);
-      },
-    );
-
-    const powerSubscription = Battery.addLowPowerModeListener(
-      ({ lowPowerMode }) => {
-        setPowerSaving(lowPowerMode);
-      },
-    );
-
-    return () => {
-      mounted = false;
-      clearInterval(intervalId);
-      levelSubscription.remove();
-      stateSubscription.remove();
-      powerSubscription.remove();
-    };
-  }, []);
+  const { batteryLevel, batteryState, powerSaving } = useBatteryStatus();
 
   return (
     <View style={styles.container}>
@@ -160,7 +110,11 @@ const BatteryRing = ({
   const statusText = useMemo(() => {
     switch (status) {
       case Battery.BatteryState.CHARGING:
-        return <Text style={{ color: "#16A34A" }}><Feather name="zap" /> CHARGING</Text>;
+        return (
+          <Text style={{ color: "#16A34A" }}>
+            <Feather name="zap" /> CHARGING
+          </Text>
+        );
       case Battery.BatteryState.FULL:
         return "FULL";
       case Battery.BatteryState.UNPLUGGED:
@@ -204,9 +158,7 @@ const BatteryRing = ({
 
       <View style={styles.centerContent}>
         <Text style={styles.level}>{label}</Text>
-        <Text style={styles.caption}>
-          {statusText}
-        </Text>
+        <Text style={styles.caption}>{statusText}</Text>
       </View>
     </Animated.View>
   );
