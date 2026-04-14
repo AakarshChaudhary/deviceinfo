@@ -170,7 +170,7 @@ const BatteryRing = ({
       default:
         return "UNKNOWN";
     }
-  }, [status]);
+  }, [status, progress]);
 
   return (
     <Animated.View
