@@ -1,9 +1,10 @@
-import { Feather } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import * as Battery from "expo-battery";
 import React, { useEffect, useMemo, useRef } from "react";
 import { Animated, Easing, StyleSheet, Text, View } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 
+import { BatteryCards } from "../../components/BatteryCards";
 import { useBatteryStatus } from "../../components/hooks/useBatteryStatus";
 
 const AnimatedCircle: any = Animated.createAnimatedComponent(Circle);
@@ -13,6 +14,14 @@ const STROKE_WIDTH = 13;
 
 const Page = () => {
   const { batteryLevel, batteryState, powerSaving } = useBatteryStatus();
+  const levelPercent = Math.round(Math.max(0, Math.min(1, batteryLevel)) * 100);
+  const healthStatus = levelPercent >= 20 ? "Healthy" : "Low";
+  const currentState =
+    batteryState === Battery.BatteryState.CHARGING
+      ? "Charging"
+      : batteryState === Battery.BatteryState.FULL
+        ? "Fully Charged"
+        : "Active Usage";
 
   return (
     <View style={styles.container}>
@@ -22,9 +31,13 @@ const Page = () => {
         strokeWidth={STROKE_WIDTH}
         status={batteryState}
       />
-      <Text style={styles.powerSaving}>
-        Power saving mode: {powerSaving ? "ENABLED" : "DISABLED"}
-      </Text>
+
+      <BatteryCards
+        levelPercent={levelPercent}
+        healthStatus={healthStatus}
+        currentState={currentState}
+        powerSaving={powerSaving}
+      />
     </View>
   );
 };
@@ -112,7 +125,7 @@ const BatteryRing = ({
       case Battery.BatteryState.CHARGING:
         return (
           <Text style={{ color: "#16A34A" }}>
-            <Feather name="zap" /> CHARGING
+            <Ionicons name="flash" /> CHARGING
           </Text>
         );
       case Battery.BatteryState.FULL:
@@ -169,7 +182,7 @@ export default Page;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: "35%",
+    marginTop: "25%",
     alignItems: "center",
   },
   ringWrapper: {
