@@ -3,13 +3,21 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 type BatteryCardsProps = {
-  levelPercent: number;
+  batteryManufacturer: string;
+  batteryTemperature: string;
+  batteryVoltage: string;
+  batteryCapacity: string;
+  chargingSpeed: string;
   healthStatus: string;
   powerSaving: boolean;
 };
 
 export const BatteryCards = ({
-  levelPercent,
+  batteryManufacturer,
+  batteryTemperature,
+  batteryVoltage,
+  batteryCapacity,
+  chargingSpeed,
   healthStatus,
   powerSaving,
 }: BatteryCardsProps) => {
@@ -23,9 +31,7 @@ export const BatteryCards = ({
           </View>
           <Ionicons name="flash" size={22} color="#2563EB" />
         </View>
-        <Text style={styles.insightHint}>
-          0% per minute
-        </Text>
+        <Text style={styles.insightHint}>0% per minute</Text>
       </View>
 
       <View style={styles.topRow}>
@@ -33,11 +39,29 @@ export const BatteryCards = ({
           <View style={styles.iconBadge}>
             <Ionicons name="battery-full" size={18} color="#047857" />
           </View>
-          <Text style={styles.cardLabel}>BATTERY LEVEL</Text>
-          <Text style={styles.levelValue}>{levelPercent}%</Text>
-          <Text style={styles.levelHint}>
-            {levelPercent >= 50 ? "Optimal range" : "Needs charging"}
-          </Text>
+          <Text style={styles.cardLabel}>BATTERY DETAILS</Text>
+          <View style={styles.detailList}>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Manufacturer</Text>
+              <Text style={styles.detailValue}>{batteryManufacturer}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Temperature</Text>
+              <Text style={styles.detailValue}>{batteryTemperature}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Voltage</Text>
+              <Text style={styles.detailValue}>{batteryVoltage}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Capacity</Text>
+              <Text style={styles.detailValue}>{batteryCapacity}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Charging Speed</Text>
+              <Text style={styles.detailValue}>{chargingSpeed}</Text>
+            </View>
+          </View>
         </View>
 
         <View style={styles.rightCards}>
@@ -80,7 +104,7 @@ const styles = StyleSheet.create({
   },
   levelCard: {
     flex: 1.3,
-    minHeight: 190,
+    minHeight: 220,
   },
   iconBadge: {
     width: 42,
@@ -97,17 +121,24 @@ const styles = StyleSheet.create({
     color: "#6B7280",
     letterSpacing: 0.8,
   },
-  levelValue: {
-    marginTop: 6,
-    fontSize: 40,
-    fontWeight: "800",
-    color: "#111827",
+  detailList: {
+    marginTop: 8,
+    gap: 8,
   },
-  levelHint: {
-    marginTop: 2,
-    fontSize: 13,
+  detailRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  detailLabel: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#6B7280",
+  },
+  detailValue: {
+    fontSize: 12,
     fontWeight: "700",
-    color: "#22C55E",
+    color: "#1F2937",
   },
   smallCard: {
     minHeight: 90,

@@ -1,5 +1,50 @@
 import * as Battery from "expo-battery";
 import { useEffect, useState } from "react";
+import { NativeModules, Platform } from "react-native";
+
+type NativeBatteryDetails = {
+  manufacturer?: string;
+  temperatureC?: number | null;
+  voltageMv?: number | null;
+  capacityMah?: number | null;
+  chargingCurrentMa?: number | null;
+};
+
+const batteryInfoModule = NativeModules.BatteryInfoModule as {
+  getBatteryDetails?: () => Promise<NativeBatteryDetails>;
+};
+
+const getNativeBatteryDetails = async (): Promise<NativeBatteryDetails> => {
+  if (Platform.OS !== "android" || !batteryInfoModule?.getBatteryDetails) {
+    return {};
+  }
+
+  try {
+    return await batteryInfoModule.getBatteryDetails();
+  } catch {
+    return {};
+  }
+};
+
+const formatTemperature = (value?: number | null) => {
+  if (typeof value !== "number" || value < 0) return "N/A";
+  return `${value.toFixed(1)}°C`;
+};
+
+const formatVoltage = (value?: number | null) => {
+  if (typeof value !== "number" || value < 0) return "N/A";
+  return `${Math.round(value)} mV`;
+};
+
+const formatCapacity = (value?: number | null) => {
+  if (typeof value !== "number" || value < 0) return "N/A";
+  return `${Math.round(value)} mAh`;
+};
+
+const formatChargingSpeed = (value?: number | null) => {
+  if (typeof value !== "number" || value <= 0) return "N/A";
+  return `${Math.round(value)} mA`;
+};
 
 export const useBatteryStatus = () => {
   const [batteryLevel, setBatteryLevel] = useState(0);
@@ -7,15 +52,21 @@ export const useBatteryStatus = () => {
     Battery.BatteryState.UNKNOWN,
   );
   const [powerSaving, setPowerSaving] = useState(false);
+  const [batteryManufacturer, setBatteryManufacturer] = useState("Unknown");
+  const [batteryTemperature, setBatteryTemperature] = useState("N/A");
+  const [batteryVoltage, setBatteryVoltage] = useState("N/A");
+  const [batteryCapacity, setBatteryCapacity] = useState("N/A");
+  const [chargingSpeed, setChargingSpeed] = useState("N/A");
 
   useEffect(() => {
     let mounted = true;
 
     const load = async () => {
-      const [level, state, lowPowerMode] = await Promise.all([
+      const [level, state, lowPowerMode, nativeDetails] = await Promise.all([
         Battery.getBatteryLevelAsync(),
         Battery.getBatteryStateAsync(),
         Battery.isLowPowerModeEnabledAsync(),
+        getNativeBatteryDetails(),
       ]);
 
       if (!mounted) return;
@@ -23,6 +74,11 @@ export const useBatteryStatus = () => {
       if (level >= 0) setBatteryLevel(level);
       setBatteryState(state);
       setPowerSaving(lowPowerMode);
+      setBatteryManufacturer(nativeDetails.manufacturer ?? "Unknown");
+      setBatteryTemperature(formatTemperature(nativeDetails.temperatureC));
+      setBatteryVoltage(formatVoltage(nativeDetails.voltageMv));
+      setBatteryCapacity(formatCapacity(nativeDetails.capacityMah));
+      setChargingSpeed(formatChargingSpeed(nativeDetails.chargingCurrentMa));
     };
 
     load();
@@ -62,5 +118,10 @@ export const useBatteryStatus = () => {
     batteryLevel,
     batteryState,
     powerSaving,
+    batteryManufacturer,
+    batteryTemperature,
+    batteryVoltage,
+    batteryCapacity,
+    chargingSpeed,
   };
 };

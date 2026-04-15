@@ -17,6 +17,11 @@ const Page = () => {
     batteryLevel,
     batteryState,
     powerSaving,
+    batteryManufacturer,
+    batteryTemperature,
+    batteryVoltage,
+    batteryCapacity,
+    chargingSpeed,
   } = useBatteryStatus();
   const levelPercent = Math.round(Math.max(0, Math.min(1, batteryLevel)) * 100);
   const healthStatus = levelPercent >= 20 ? "Healthy" : "Low";
@@ -31,7 +36,11 @@ const Page = () => {
       />
 
       <BatteryCards
-        levelPercent={levelPercent}
+        batteryManufacturer={batteryManufacturer}
+        batteryTemperature={batteryTemperature}
+        batteryVoltage={batteryVoltage}
+        batteryCapacity={batteryCapacity}
+        chargingSpeed={chargingSpeed}
         healthStatus={healthStatus}
         powerSaving={powerSaving}
       />
