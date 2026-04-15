@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 type BatteryCardsProps = {
   batteryManufacturer: string;
@@ -15,6 +15,18 @@ type BatteryCardsProps = {
   powerSaving: boolean;
 };
 
+type DetailRowProps = {
+  label: string;
+  value: string;
+};
+
+const DetailRow = ({ label, value }: DetailRowProps) => (
+  <View style={styles.detailRow}>
+    <Text style={styles.detailLabel}>{label}</Text>
+    <Text style={styles.detailValue}>{value}</Text>
+  </View>
+);
+
 export const BatteryCards = ({
   batteryManufacturer,
   batteryTechnology,
@@ -27,76 +39,69 @@ export const BatteryCards = ({
   healthStatus,
   powerSaving,
 }: BatteryCardsProps) => {
+  const healthColor =
+    healthStatus.toLowerCase() === "good" ? "#047857" : "#B45309";
+
   return (
     <View style={styles.cardsSection}>
-      <View style={[styles.card, styles.insightCard]}>
-        <View style={styles.insightRow}>
-          <View>
-            <Text style={styles.cardLabel}>BATTERY INSIGHT</Text>
-            <Text style={styles.insightValue}>Default</Text>
-          </View>
-          <Ionicons name="flash" size={22} color="#2563EB" />
-        </View>
-        <Text style={styles.insightHint}>0% per minute</Text>
-      </View>
-
-      <View style={styles.topRow}>
-        <View style={[styles.card, styles.levelCard]}>
-          <View style={styles.iconBadge}>
-            <Ionicons name="battery-full" size={18} color="#047857" />
-          </View>
-          <Text style={styles.cardLabel}>BATTERY DETAILS</Text>
-          <View style={styles.detailList}>
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Manufacturer</Text>
-              <Text style={styles.detailValue}>{batteryManufacturer}</Text>
+      <View style={styles.panel}>
+        <ScrollView
+          contentContainerStyle={styles.panelContent}
+          showsVerticalScrollIndicator
+        >
+          <View style={styles.headerRow}>
+            <View>
+              <Text style={styles.headerLabel}>BATTERY DASHBOARD</Text>
+              <Text style={styles.headerTitle}>Charging Overview</Text>
             </View>
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Technology</Text>
-              <Text style={styles.detailValue}>{batteryTechnology}</Text>
+            <View style={styles.headerIconBadge}>
+              <Ionicons name="battery-full" size={18} color="#1D4ED8" />
             </View>
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Temperature</Text>
-              <Text style={styles.detailValue}>{batteryTemperature}</Text>
-            </View>
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Voltage</Text>
-              <Text style={styles.detailValue}>{batteryVoltage}</Text>
-            </View>
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Capacity</Text>
-              <Text style={styles.detailValue}>{batteryCapacity}</Text>
-            </View>
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Charging Speed</Text>
-              <Text style={styles.detailValue}>{chargingSpeed}</Text>
-            </View>
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Time to Full</Text>
-              <Text style={styles.detailValue}>{estimatedTime}</Text>
-            </View>
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Charging Type</Text>
-              <Text style={styles.detailValue}>{chargingType}</Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.rightCards}>
-          <View style={[styles.card, styles.smallCard]}>
-            <Ionicons name="checkmark-done" size={16} color="#047857" />
-            <Text style={styles.smallLabel}>STATUS</Text>
-            <Text style={styles.smallValue}>{healthStatus}</Text>
           </View>
 
-          <View style={[styles.card, styles.smallCard]}>
-            <Ionicons name="leaf" size={16} color="#047857" />
-            <Text style={styles.smallLabel}>SAVING</Text>
-            <Text style={styles.smallValue}>
-              {powerSaving ? "Active" : "Inactive"}
-            </Text>
+          <View style={styles.quickStatsRow}>
+            <View style={[styles.quickStatCard, styles.quickStatPrimary]}>
+              <Text style={styles.quickStatLabel}>Charging Speed</Text>
+              <Text style={styles.quickStatValue}>{chargingSpeed}</Text>
+            </View>
+            <View style={[styles.quickStatCard, styles.quickStatSecondary]}>
+              <Text style={styles.quickStatLabel}>Time to Full</Text>
+              <Text style={styles.quickStatValue}>{estimatedTime}</Text>
+            </View>
           </View>
-        </View>
+
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="flash" size={14} color="#1D4ED8" />
+              <Text style={styles.sectionTitle}>Charging</Text>
+            </View>
+            <DetailRow label="Type" value={chargingType} />
+            <DetailRow
+              label="Power Saving"
+              value={powerSaving ? "Active" : "Inactive"}
+            />
+          </View>
+
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="checkmark-done" size={14} color={healthColor} />
+              <Text style={styles.sectionTitle}>Battery Condition</Text>
+            </View>
+            <DetailRow label="Health" value={healthStatus} />
+            <DetailRow label="Temperature" value={batteryTemperature} />
+            <DetailRow label="Voltage" value={batteryVoltage} />
+            <DetailRow label="Capacity" value={batteryCapacity} />
+          </View>
+
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="leaf" size={14} color="#047857" />
+              <Text style={styles.sectionTitle}>Device Details</Text>
+            </View>
+            <DetailRow label="Manufacturer" value={batteryManufacturer} />
+            <DetailRow label="Technology" value={batteryTechnology} />
+          </View>
+        </ScrollView>
       </View>
     </View>
   );
@@ -105,95 +110,105 @@ export const BatteryCards = ({
 const styles = StyleSheet.create({
   cardsSection: {
     width: "90%",
-    marginTop: 30,
+    marginTop: 25,
   },
-  topRow: {
+  panel: {
+    backgroundColor: "#F8FAFC",
+    borderRadius: 22,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    maxHeight: 430,
+  },
+  panelContent: {
+    paddingBottom: 6,
+  },
+  headerRow: {
     flexDirection: "row",
-    gap: 15,
-  },
-  rightCards: {
-    flex: 1,
-    gap: 15,
-  },
-  card: {
-    backgroundColor: "#F9FAFB",
-    borderRadius: 18,
-    padding: 14,
-  },
-  levelCard: {
-    flex: 1.3,
-    minHeight: 220,
-  },
-  iconBadge: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: "#E5F7EF",
+    justifyContent: "space-between",
     alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 18,
   },
-  cardLabel: {
+  headerLabel: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#6B7280",
+    color: "#64748B",
+    letterSpacing: 1,
+  },
+  headerTitle: {
+    marginTop: 5,
+    fontSize: 21,
+    fontWeight: "700",
+    color: "#0F172A",
+  },
+  headerIconBadge: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "#DBEAFE",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  quickStatsRow: {
+    marginTop: 13,
+    flexDirection: "row",
+    gap: 10,
+  },
+  quickStatCard: {
+    flex: 1,
+    borderRadius: 16,
+    padding: 12,
+  },
+  quickStatPrimary: {
+    backgroundColor: "#EEF2FF",
+  },
+  quickStatSecondary: {
+    backgroundColor: "#ECFEFF",
+  },
+  quickStatLabel: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: "#475569",
     letterSpacing: 0.8,
   },
-  detailList: {
-    marginTop: 8,
-    gap: 8,
+  quickStatValue: {
+    marginTop: 6,
+    fontSize: 21,
+    fontWeight: "800",
+    color: "#0F172A",
+  },
+  sectionCard: {
+    marginTop: 10,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 14,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+    gap: 6,
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#334155",
   },
   detailRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    paddingVertical: 4,
   },
   detailLabel: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#6B7280",
+    color: "#64748B",
   },
   detailValue: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#1F2937",
-  },
-  smallCard: {
-    minHeight: 90,
-    justifyContent: "center",
-  },
-  smallLabel: {
-    marginTop: 8,
-    fontSize: 10,
-    fontWeight: "700",
-    color: "#9CA3AF",
-    letterSpacing: 0.8,
-  },
-  smallValue: {
-    marginTop: 2,
-    fontSize: 28,
-    fontWeight: "700",
-    color: "#1F2937",
-  },
-  insightCard: {
-    minHeight: 100,
-    marginBottom: 20,
-  },
-  insightRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  insightValue: {
-    marginTop: 6,
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#1F2937",
-  },
-  insightHint: {
-    marginTop: 10,
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#6B7280",
+    color: "#0F172A",
   },
 });
