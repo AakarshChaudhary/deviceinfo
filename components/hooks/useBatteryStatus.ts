@@ -8,6 +8,7 @@ type NativeBatteryDetails = {
   voltageMv?: number | null;
   capacityMah?: number | null;
   chargingCurrentMa?: number | null;
+  chargingType?: string | null;
   batteryHealth?: string | null;
   batteryTechnology?: string | null;
 };
@@ -43,15 +44,50 @@ const formatCapacity = (value?: number | null) => {
   return `${Math.round(value)} mAh`;
 };
 
-const formatChargingSpeed = (value?: number | null) => {
-  if (typeof value !== "number" || value <= 0) return "N/A";
-  return `${Math.round(value)} mA`;
+const formatChargingSpeed = (
+  currentMa?: number | null,
+  capacityMah?: number | null,
+) => {
+  if (typeof currentMa !== "number" || currentMa <= 0) return "N/A";
+  if (typeof capacityMah === "number" && capacityMah > 0) {
+    const percentPerHour = (currentMa / capacityMah) * 100;
+    if (percentPerHour < 1) {
+      const percentPerMin = percentPerHour / 60;
+      return `${percentPerMin.toFixed(2)}%/min`;
+    }
+    return `${percentPerHour.toFixed(1)}%/h`;
+  }
+  return `${Math.round(currentMa)} mA`;
 };
 
 const formatManufacturer = (manufacturer?: string | null) => {
   if (!manufacturer?.trim()) return "Unknown";
   const trimmed = manufacturer.trim();
   return `${trimmed[0].toUpperCase()}${trimmed.slice(1)}`;
+};
+
+const formatEstimatedTime = (
+  currentMa?: number | null,
+  capacityMah?: number | null,
+  batteryLevel?: number,
+) => {
+  if (typeof currentMa !== "number" || currentMa <= 0) return "N/A";
+  if (typeof capacityMah !== "number" || capacityMah <= 0) return "N/A";
+  if (typeof batteryLevel !== "number" || batteryLevel < 0 || batteryLevel >= 1)
+    return "N/A";
+
+  const remainingRatio = 1 - batteryLevel;
+  const remainingMah = capacityMah * remainingRatio;
+  const hours = remainingMah / currentMa;
+  if (hours <= 0) return "N/A";
+
+  const totalMinutes = Math.round(hours * 60);
+  if (totalMinutes < 60) {
+    return `${totalMinutes} min`;
+  }
+  const hrs = Math.floor(totalMinutes / 60);
+  const mins = totalMinutes % 60;
+  return mins === 0 ? `${hrs} h` : `${hrs} h ${mins} m`;
 };
 
 export const useBatteryStatus = () => {
@@ -65,8 +101,10 @@ export const useBatteryStatus = () => {
   const [batteryVoltage, setBatteryVoltage] = useState("N/A");
   const [batteryCapacity, setBatteryCapacity] = useState("N/A");
   const [chargingSpeed, setChargingSpeed] = useState("N/A");
+  const [estimatedTime, setEstimatedTime] = useState("N/A");
   const [batteryHealth, setBatteryHealth] = useState("Unknown");
   const [batteryTechnology, setBatteryTechnology] = useState("Unknown");
+  const [chargingType, setChargingType] = useState("Unplugged");
 
   useEffect(() => {
     let mounted = true;
@@ -88,7 +126,9 @@ export const useBatteryStatus = () => {
       setBatteryTemperature(formatTemperature(nativeDetails.temperatureC));
       setBatteryVoltage(formatVoltage(nativeDetails.voltageMv));
       setBatteryCapacity(formatCapacity(nativeDetails.capacityMah));
-      setChargingSpeed(formatChargingSpeed(nativeDetails.chargingCurrentMa));
+      setChargingSpeed(formatChargingSpeed(nativeDetails.chargingCurrentMa, nativeDetails.capacityMah));
+      setEstimatedTime(formatEstimatedTime(nativeDetails.chargingCurrentMa, nativeDetails.capacityMah, level));
+      setChargingType(nativeDetails.chargingType ?? "Unplugged");
       setBatteryHealth(nativeDetails.batteryHealth ?? "Unknown");
       setBatteryTechnology(nativeDetails.batteryTechnology ?? "Unknown");
     };
@@ -135,6 +175,8 @@ export const useBatteryStatus = () => {
     batteryVoltage,
     batteryCapacity,
     chargingSpeed,
+    estimatedTime,
+    chargingType,
     batteryHealth,
     batteryTechnology,
   };

@@ -22,6 +22,8 @@ const Page = () => {
     batteryVoltage,
     batteryCapacity,
     chargingSpeed,
+    estimatedTime,
+    chargingType,
     batteryHealth,
     batteryTechnology,
   } = useBatteryStatus();
@@ -43,6 +45,8 @@ const Page = () => {
         batteryVoltage={batteryVoltage}
         batteryCapacity={batteryCapacity}
         chargingSpeed={chargingSpeed}
+        estimatedTime={estimatedTime}
+        chargingType={chargingType}
         batteryTechnology={batteryTechnology}
         healthStatus={healthStatus}
         powerSaving={powerSaving}
@@ -193,7 +197,7 @@ export default Page;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: "25%",
+    marginTop: "20%",
     alignItems: "center",
   },
   ringWrapper: {

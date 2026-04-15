@@ -9,6 +9,8 @@ type BatteryCardsProps = {
   batteryVoltage: string;
   batteryCapacity: string;
   chargingSpeed: string;
+  estimatedTime: string;
+  chargingType: string;
   healthStatus: string;
   powerSaving: boolean;
 };
@@ -20,6 +22,8 @@ export const BatteryCards = ({
   batteryVoltage,
   batteryCapacity,
   chargingSpeed,
+  estimatedTime,
+  chargingType,
   healthStatus,
   powerSaving,
 }: BatteryCardsProps) => {
@@ -67,6 +71,14 @@ export const BatteryCards = ({
               <Text style={styles.detailLabel}>Charging Speed</Text>
               <Text style={styles.detailValue}>{chargingSpeed}</Text>
             </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Time to Full</Text>
+              <Text style={styles.detailValue}>{estimatedTime}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Charging Type</Text>
+              <Text style={styles.detailValue}>{chargingType}</Text>
+            </View>
           </View>
         </View>
 
@@ -93,7 +105,7 @@ export const BatteryCards = ({
 const styles = StyleSheet.create({
   cardsSection: {
     width: "90%",
-    marginTop: 70,
+    marginTop: 30,
   },
   topRow: {
     flexDirection: "row",

@@ -13,7 +13,6 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.uimanager.ViewManager
-import java.io.File
 import kotlin.math.abs
 
 class BatteryInfoModule(private val reactContext: ReactApplicationContext) :
@@ -33,10 +32,11 @@ class BatteryInfoModule(private val reactContext: ReactApplicationContext) :
       val statusRaw = batteryIntent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
       val healthRaw = batteryIntent?.getIntExtra(BatteryManager.EXTRA_HEALTH, -1) ?: -1
       val technology = batteryIntent?.getStringExtra(BatteryManager.EXTRA_TECHNOLOGY)
+      val pluggedRaw = batteryIntent?.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1) ?: -1
       val capacityPercent = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
       val chargeCounterMicroAh =
         batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER)
-      val currentNowMicroAmp = readLongFromFile("/sys/class/power_supply/battery/current_now")
+      val currentNowMicroAmp = batteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
 
       val capacityMah = if (chargeCounterMicroAh > 0 && capacityPercent in 1..100) {
         val remainingMah = chargeCounterMicroAh / 1000.0
@@ -48,10 +48,17 @@ class BatteryInfoModule(private val reactContext: ReactApplicationContext) :
       val isCharging = statusRaw == BatteryManager.BATTERY_STATUS_CHARGING ||
         statusRaw == BatteryManager.BATTERY_STATUS_FULL
 
-      val chargingCurrentMa = if (isCharging && currentNowMicroAmp != null) {
-        abs(currentNowMicroAmp) / 1000.0
+      val chargingCurrentMa = if (isCharging && currentNowMicroAmp != 0L) {
+        abs(currentNowMicroAmp).toDouble()
       } else {
         null
+      }
+
+      val chargingType = when (pluggedRaw) {
+        BatteryManager.BATTERY_PLUGGED_USB -> "USB"
+        BatteryManager.BATTERY_PLUGGED_AC -> "AC"
+        BatteryManager.BATTERY_PLUGGED_WIRELESS -> "Wireless"
+        else -> "Unplugged"
       }
 
       val result = Arguments.createMap().apply {
@@ -81,6 +88,7 @@ class BatteryInfoModule(private val reactContext: ReactApplicationContext) :
           putNull("chargingCurrentMa")
         }
 
+        putString("chargingType", chargingType)
         putString("batteryHealth", mapBatteryHealth(healthRaw))
         putString("batteryTechnology", cleanText(technology))
       }
@@ -109,13 +117,7 @@ class BatteryInfoModule(private val reactContext: ReactApplicationContext) :
     }
   }
 
-  private fun readLongFromFile(path: String): Long? {
-    return try {
-      File(path).readText().trim().toLongOrNull()
-    } catch (_: Exception) {
-      null
-    }
-  }
+  
 }
 
 class BatteryInfoPackage : ReactPackage {
