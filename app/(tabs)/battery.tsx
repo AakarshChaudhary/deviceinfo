@@ -13,7 +13,11 @@ const SIZE = 260;
 const STROKE_WIDTH = 13;
 
 const Page = () => {
-  const { batteryLevel, batteryState, powerSaving } = useBatteryStatus();
+  const {
+    batteryLevel,
+    batteryState,
+    powerSaving,
+  } = useBatteryStatus();
   const levelPercent = Math.round(Math.max(0, Math.min(1, batteryLevel)) * 100);
   const healthStatus = levelPercent >= 20 ? "Healthy" : "Low";
 
@@ -105,13 +109,15 @@ const BatteryRing = ({
 
   const label = useMemo(() => `${Math.round(progress * 100)}%`, [progress]);
   const ringColor =
-    progress >= 0.8
-      ? "#16A34A"
-      : progress >= 0.5
-        ? "#F59E0B"
-        : progress >= 0.2
-          ? "#F97316"
-          : "#DC2626";
+    status === Battery.BatteryState.CHARGING
+      ? "#2563EB"
+      : progress >= 0.8
+        ? "#16A34A"
+        : progress >= 0.5
+          ? "#F59E0B"
+          : progress >= 0.2
+            ? "#F97316"
+            : "#DC2626";
 
   const statusText = useMemo(() => {
     switch (status) {

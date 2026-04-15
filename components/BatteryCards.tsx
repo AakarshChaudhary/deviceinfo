@@ -15,7 +15,18 @@ export const BatteryCards = ({
 }: BatteryCardsProps) => {
   return (
     <View style={styles.cardsSection}>
-      <View style={[styles.card, styles.insightCard]} />
+      <View style={[styles.card, styles.insightCard]}>
+        <View style={styles.insightRow}>
+          <View>
+            <Text style={styles.cardLabel}>BATTERY INSIGHT</Text>
+            <Text style={styles.insightValue}>Default</Text>
+          </View>
+          <Ionicons name="flash" size={22} color="#2563EB" />
+        </View>
+        <Text style={styles.insightHint}>
+          0% per minute
+        </Text>
+      </View>
 
       <View style={styles.topRow}>
         <View style={[styles.card, styles.levelCard]}>
@@ -119,29 +130,21 @@ const styles = StyleSheet.create({
     minHeight: 100,
     marginBottom: 20,
   },
-  stateCard: {
-    marginTop: 10,
-    minHeight: 86,
+  insightRow: {
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
+    alignItems: "center",
   },
-  stateValue: {
-    marginTop: 2,
-    fontSize: 33,
+  insightValue: {
+    marginTop: 6,
+    fontSize: 24,
     fontWeight: "700",
     color: "#1F2937",
   },
-  livePill: {
-    backgroundColor: "#E5F7EF",
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-  },
-  liveText: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#10B981",
-    letterSpacing: 0.6,
+  insightHint: {
+    marginTop: 10,
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#6B7280",
   },
 });
