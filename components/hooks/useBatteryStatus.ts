@@ -8,6 +8,7 @@ type NativeBatteryDetails = {
   voltageMv?: number | null;
   capacityMah?: number | null;
   chargingCurrentMa?: number | null;
+  batteryHealth?: string | null;
 };
 
 const batteryInfoModule = NativeModules.BatteryInfoModule as {
@@ -57,6 +58,7 @@ export const useBatteryStatus = () => {
   const [batteryVoltage, setBatteryVoltage] = useState("N/A");
   const [batteryCapacity, setBatteryCapacity] = useState("N/A");
   const [chargingSpeed, setChargingSpeed] = useState("N/A");
+  const [batteryHealth, setBatteryHealth] = useState("Unknown");
 
   useEffect(() => {
     let mounted = true;
@@ -79,6 +81,7 @@ export const useBatteryStatus = () => {
       setBatteryVoltage(formatVoltage(nativeDetails.voltageMv));
       setBatteryCapacity(formatCapacity(nativeDetails.capacityMah));
       setChargingSpeed(formatChargingSpeed(nativeDetails.chargingCurrentMa));
+      setBatteryHealth(nativeDetails.batteryHealth ?? "Unknown");
     };
 
     load();
@@ -123,5 +126,6 @@ export const useBatteryStatus = () => {
     batteryVoltage,
     batteryCapacity,
     chargingSpeed,
+    batteryHealth,
   };
 };

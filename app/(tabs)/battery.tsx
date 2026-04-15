@@ -22,9 +22,10 @@ const Page = () => {
     batteryVoltage,
     batteryCapacity,
     chargingSpeed,
+    batteryHealth,
   } = useBatteryStatus();
   const levelPercent = Math.round(Math.max(0, Math.min(1, batteryLevel)) * 100);
-  const healthStatus = levelPercent >= 20 ? "Healthy" : "Low";
+  const healthStatus = batteryHealth;
 
   return (
     <View style={styles.container}>
