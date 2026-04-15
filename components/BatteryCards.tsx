@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 type BatteryCardsProps = {
   batteryManufacturer: string;
+  batteryTechnology: string;
   batteryTemperature: string;
   batteryVoltage: string;
   batteryCapacity: string;
@@ -14,6 +15,7 @@ type BatteryCardsProps = {
 
 export const BatteryCards = ({
   batteryManufacturer,
+  batteryTechnology,
   batteryTemperature,
   batteryVoltage,
   batteryCapacity,
@@ -44,6 +46,10 @@ export const BatteryCards = ({
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Manufacturer</Text>
               <Text style={styles.detailValue}>{batteryManufacturer}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Technology</Text>
+              <Text style={styles.detailValue}>{batteryTechnology}</Text>
             </View>
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Temperature</Text>

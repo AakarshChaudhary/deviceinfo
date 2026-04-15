@@ -23,6 +23,7 @@ const Page = () => {
     batteryCapacity,
     chargingSpeed,
     batteryHealth,
+    batteryTechnology,
   } = useBatteryStatus();
   const levelPercent = Math.round(Math.max(0, Math.min(1, batteryLevel)) * 100);
   const healthStatus = batteryHealth;
@@ -42,6 +43,7 @@ const Page = () => {
         batteryVoltage={batteryVoltage}
         batteryCapacity={batteryCapacity}
         chargingSpeed={chargingSpeed}
+        batteryTechnology={batteryTechnology}
         healthStatus={healthStatus}
         powerSaving={powerSaving}
       />

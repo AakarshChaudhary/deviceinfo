@@ -9,6 +9,7 @@ type NativeBatteryDetails = {
   capacityMah?: number | null;
   chargingCurrentMa?: number | null;
   batteryHealth?: string | null;
+  batteryTechnology?: string | null;
 };
 
 const batteryInfoModule = NativeModules.BatteryInfoModule as {
@@ -47,6 +48,12 @@ const formatChargingSpeed = (value?: number | null) => {
   return `${Math.round(value)} mA`;
 };
 
+const formatManufacturer = (manufacturer?: string | null) => {
+  if (!manufacturer?.trim()) return "Unknown";
+  const trimmed = manufacturer.trim();
+  return `${trimmed[0].toUpperCase()}${trimmed.slice(1)}`;
+};
+
 export const useBatteryStatus = () => {
   const [batteryLevel, setBatteryLevel] = useState(0);
   const [batteryState, setBatteryState] = useState<Battery.BatteryState>(
@@ -59,6 +66,7 @@ export const useBatteryStatus = () => {
   const [batteryCapacity, setBatteryCapacity] = useState("N/A");
   const [chargingSpeed, setChargingSpeed] = useState("N/A");
   const [batteryHealth, setBatteryHealth] = useState("Unknown");
+  const [batteryTechnology, setBatteryTechnology] = useState("Unknown");
 
   useEffect(() => {
     let mounted = true;
@@ -76,12 +84,13 @@ export const useBatteryStatus = () => {
       if (level >= 0) setBatteryLevel(level);
       setBatteryState(state);
       setPowerSaving(lowPowerMode);
-      setBatteryManufacturer(nativeDetails.manufacturer ?? "Unknown");
+      setBatteryManufacturer(formatManufacturer(nativeDetails.manufacturer));
       setBatteryTemperature(formatTemperature(nativeDetails.temperatureC));
       setBatteryVoltage(formatVoltage(nativeDetails.voltageMv));
       setBatteryCapacity(formatCapacity(nativeDetails.capacityMah));
       setChargingSpeed(formatChargingSpeed(nativeDetails.chargingCurrentMa));
       setBatteryHealth(nativeDetails.batteryHealth ?? "Unknown");
+      setBatteryTechnology(nativeDetails.batteryTechnology ?? "Unknown");
     };
 
     load();
@@ -127,5 +136,6 @@ export const useBatteryStatus = () => {
     batteryCapacity,
     chargingSpeed,
     batteryHealth,
+    batteryTechnology,
   };
 };
