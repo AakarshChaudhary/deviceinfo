@@ -5,18 +5,18 @@ import { StyleSheet, Text, View } from "react-native";
 type BatteryCardsProps = {
   levelPercent: number;
   healthStatus: string;
-  currentState: string;
   powerSaving: boolean;
 };
 
 export const BatteryCards = ({
   levelPercent,
   healthStatus,
-  currentState,
   powerSaving,
 }: BatteryCardsProps) => {
   return (
     <View style={styles.cardsSection}>
+      <View style={[styles.card, styles.insightCard]} />
+
       <View style={styles.topRow}>
         <View style={[styles.card, styles.levelCard]}>
           <View style={styles.iconBadge}>
@@ -43,16 +43,6 @@ export const BatteryCards = ({
               {powerSaving ? "Active" : "Inactive"}
             </Text>
           </View>
-        </View>
-      </View>
-
-      <View style={[styles.card, styles.stateCard]}>
-        <View>
-          <Text style={styles.smallLabel}>CURRENT STATE</Text>
-          <Text style={styles.stateValue}>{currentState}</Text>
-        </View>
-        <View style={styles.livePill}>
-          <Text style={styles.liveText}>LIVE</Text>
         </View>
       </View>
     </View>
@@ -124,6 +114,10 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "700",
     color: "#1F2937",
+  },
+  insightCard: {
+    minHeight: 100,
+    marginBottom: 20,
   },
   stateCard: {
     marginTop: 10,

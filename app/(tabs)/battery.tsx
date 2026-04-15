@@ -16,12 +16,6 @@ const Page = () => {
   const { batteryLevel, batteryState, powerSaving } = useBatteryStatus();
   const levelPercent = Math.round(Math.max(0, Math.min(1, batteryLevel)) * 100);
   const healthStatus = levelPercent >= 20 ? "Healthy" : "Low";
-  const currentState =
-    batteryState === Battery.BatteryState.CHARGING
-      ? "Charging"
-      : batteryState === Battery.BatteryState.FULL
-        ? "Fully Charged"
-        : "Active Usage";
 
   return (
     <View style={styles.container}>
@@ -35,7 +29,6 @@ const Page = () => {
       <BatteryCards
         levelPercent={levelPercent}
         healthStatus={healthStatus}
-        currentState={currentState}
         powerSaving={powerSaving}
       />
     </View>
@@ -112,12 +105,12 @@ const BatteryRing = ({
 
   const label = useMemo(() => `${Math.round(progress * 100)}%`, [progress]);
   const ringColor =
-    status === Battery.BatteryState.CHARGING
-      ? "#2563EB"
+    progress >= 0.8
+      ? "#16A34A"
       : progress >= 0.5
-        ? "#16A34A"
+        ? "#F59E0B"
         : progress >= 0.2
-          ? "#EAB308"
+          ? "#F97316"
           : "#DC2626";
 
   const statusText = useMemo(() => {
@@ -131,7 +124,7 @@ const BatteryRing = ({
       case Battery.BatteryState.FULL:
         return "FULL";
       case Battery.BatteryState.UNPLUGGED:
-        return <Text style={{ color: "#F59E0B" }}>UNPLUGGED</Text>;
+        return "UNPLUGGED";
       case progress <= 0.2 && Battery.BatteryState.UNKNOWN:
         return "LOW";
       default:
