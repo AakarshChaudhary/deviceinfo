@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 50,
-    backgroundColor: "#DBEAFE",
+    backgroundColor: colors.surface.tintBlue,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -160,10 +160,10 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   quickStatPrimary: {
-    backgroundColor: "#EEF2FF",
+    backgroundColor: colors.surface.tintIndigo,
   },
   quickStatSecondary: {
-    backgroundColor: "#ECFEFF",
+    backgroundColor: colors.surface.tintCyan,
   },
   quickStatLabel: {
     fontSize: 10,

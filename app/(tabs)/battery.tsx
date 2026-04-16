@@ -126,14 +126,14 @@ const BatteryRing = ({
   const label = useMemo(() => `${Math.round(progress * 100)}%`, [progress]);
   const ringColor =
     status === Battery.BatteryState.CHARGING
-      ? "#2563EB"
+      ? colors.ring.charging
       : progress >= 0.8
-        ? "#16A34A"
+        ? colors.ring.high
         : progress >= 0.5
-          ? "#F59E0B"
+          ? colors.ring.good
           : progress >= 0.2
-            ? "#F97316"
-            : "#DC2626";
+            ? colors.ring.low
+            : colors.ring.critical;
 
   const statusText = useMemo(() => {
     switch (status) {
