@@ -9,7 +9,7 @@ import { useBatteryStatus } from "../../components/hooks/useBatteryStatus";
 
 const AnimatedCircle: any = Animated.createAnimatedComponent(Circle);
 
-const SIZE = 260;
+const SIZE = 250;
 const STROKE_WIDTH = 13;
 
 const Page = () => {
@@ -27,7 +27,6 @@ const Page = () => {
     batteryHealth,
     batteryTechnology,
   } = useBatteryStatus();
-  const levelPercent = Math.round(Math.max(0, Math.min(1, batteryLevel)) * 100);
   const healthStatus = batteryHealth;
 
   return (

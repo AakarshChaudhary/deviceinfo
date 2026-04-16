@@ -118,10 +118,10 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderColor: "#E2E8F0",
-    maxHeight: 430,
+    maxHeight: 435,
   },
   panelContent: {
-    paddingBottom: 6,
+    paddingBottom: 5,
   },
   headerRow: {
     flexDirection: "row",
