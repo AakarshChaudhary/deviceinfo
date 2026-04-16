@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import colors from "./theme/color";
 
 type BatteryCardsProps = {
   batteryManufacturer: string;
@@ -131,19 +132,19 @@ const styles = StyleSheet.create({
   headerLabel: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#64748B",
+    color: colors.text.tertiary,
     letterSpacing: 1,
   },
   headerTitle: {
     marginTop: 5,
     fontSize: 21,
     fontWeight: "700",
-    color: "#0F172A",
+    color: colors.text.primary,
   },
   headerIconBadge: {
     width: 38,
     height: 38,
-    borderRadius: 19,
+    borderRadius: 50,
     backgroundColor: "#DBEAFE",
     alignItems: "center",
     justifyContent: "center",
@@ -167,14 +168,14 @@ const styles = StyleSheet.create({
   quickStatLabel: {
     fontSize: 10,
     fontWeight: "700",
-    color: "#475569",
+    color: colors.text.tertiary,
     letterSpacing: 0.8,
   },
   quickStatValue: {
     marginTop: 6,
     fontSize: 21,
     fontWeight: "800",
-    color: "#0F172A",
+    color: colors.text.primary,
   },
   sectionCard: {
     marginTop: 10,
@@ -193,7 +194,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#334155",
+    color: colors.text.secondary,
   },
   detailRow: {
     flexDirection: "row",
@@ -204,11 +205,12 @@ const styles = StyleSheet.create({
   detailLabel: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#64748B",
+    color: colors.text.tertiary,
+
   },
   detailValue: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#0F172A",
+    color: colors.text.primary,
   },
 });

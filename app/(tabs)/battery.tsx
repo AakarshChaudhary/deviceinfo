@@ -3,6 +3,7 @@ import * as Battery from "expo-battery";
 import React, { useEffect, useMemo, useRef } from "react";
 import { Animated, Easing, StyleSheet, Text, View } from "react-native";
 import Svg, { Circle } from "react-native-svg";
+import { colors } from "../../components/theme/color";
 
 import { BatteryCards } from "../../components/BatteryCards";
 import { useBatteryStatus } from "../../components/hooks/useBatteryStatus";
@@ -211,20 +212,14 @@ const styles = StyleSheet.create({
   level: {
     fontSize: 56,
     fontWeight: "700",
-    color: "#111827",
+    color: colors.text.primary,
     letterSpacing: 1,
   },
   caption: {
     marginTop: 6,
     fontSize: 13,
     fontWeight: "700",
-    color: "#4B5563",
+    color: colors.text.secondary,
     letterSpacing: 1,
-  },
-  powerSaving: {
-    marginTop: 20,
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#4B5563",
   },
 });
