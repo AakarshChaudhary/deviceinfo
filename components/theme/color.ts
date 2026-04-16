@@ -32,6 +32,7 @@ export const colors = {
     green: "#047857",
     blue: "#1D4ED8",
     orange: "#B45309",
+    yellow: "#F59E0B",
   },
 
   tab: {

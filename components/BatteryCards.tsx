@@ -41,7 +41,7 @@ export const BatteryCards = ({
   powerSaving,
 }: BatteryCardsProps) => {
   const healthColor =
-    healthStatus.toLowerCase() === "good" ? colors.icon.green : colors.icon.orange;
+    healthStatus.toLowerCase() === "good" ? colors.icon.blue : colors.icon.orange;
 
   return (
     <View style={styles.cardsSection}>
@@ -73,7 +73,7 @@ export const BatteryCards = ({
 
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeader}>
-              <Ionicons name="flash" size={14} color={colors.icon.blue} />
+              <Ionicons name="flash" size={14} color={colors.icon.yellow} />
               <Text style={styles.sectionTitle}>Charging</Text>
             </View>
             <DetailRow label="Power Source" value={chargingType} />
@@ -85,19 +85,19 @@ export const BatteryCards = ({
 
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeader}>
-              <Ionicons name="checkmark-done" size={14} color={healthColor} />
+              <Ionicons name="fitness" size={14} color={healthColor} />
               <Text style={styles.sectionTitle}>Battery Condition</Text>
             </View>
             <DetailRow label="Health" value={healthStatus} />
             <DetailRow label="Temperature" value={batteryTemperature} />
             <DetailRow label="Voltage" value={batteryVoltage} />
-            <DetailRow label="Capacity" value={batteryCapacity} />
+            <DetailRow label="Estimated Capacity" value={batteryCapacity} />
           </View>
 
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeader}>
               <Ionicons name="leaf" size={14} color={colors.icon.green} />
-              <Text style={styles.sectionTitle}>Device Details</Text>
+              <Text style={styles.sectionTitle}>Battery Details</Text>
             </View>
             <DetailRow label="Manufacturer" value={batteryManufacturer} />
             <DetailRow label="Technology" value={batteryTechnology} />
