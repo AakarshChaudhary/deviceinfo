@@ -5,8 +5,8 @@ import { Animated, Easing, StyleSheet, Text, View } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 import { colors } from "../../components/theme/color";
 
-import { BatteryCards } from "../../components/BatteryCards";
-import { useBatteryStatus } from "../../components/hooks/useBatteryStatus";
+import { BatteryCards } from "../../components/battery/BatteryCards";
+import { useBatteryStatus } from "../../components/battery/hooks/useBatteryStatus";
 
 const AnimatedCircle: any = Animated.createAnimatedComponent(Circle);
 
