@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { ReactNode } from "react";
+import colors from "./theme/color";
 
 type RouteName = "index" | "battery" | "sensors" | "network" | "system";
 
@@ -61,9 +62,9 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
             style={styles.tabbarItem}
           >
             {icon[routeName](isFocused, {
-              color: isFocused ? "#673ab7" : "#222",
+              color: isFocused ? colors.tab.active : colors.tab.inactive,
             })}
-            <Text style={{ color: isFocused ? "#673ab7" : "#222" }}>
+            <Text style={{ color: isFocused ? colors.tab.active : colors.tab.inactive }}>
               {labelText}
             </Text>
           </TouchableOpacity>
@@ -80,11 +81,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: colors.background,
     marginHorizontal: 20,
     paddingVertical: 13,
     borderRadius: 50,
-    shadowColor: "#000",
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 10 },
     shadowRadius: 10,
     shadowOpacity: 0.08,

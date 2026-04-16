@@ -139,7 +139,7 @@ const BatteryRing = ({
     switch (status) {
       case Battery.BatteryState.CHARGING:
         return (
-          <Text style={{ color: "#16A34A" }}>
+          <Text style={{ color: colors.text.green }}>
             <Ionicons name="flash" /> CHARGING
           </Text>
         );
@@ -166,7 +166,7 @@ const BatteryRing = ({
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="#E5E7EB"
+          stroke={colors.ring.stroke}
           strokeWidth={strokeWidth}
           fill="none"
         />

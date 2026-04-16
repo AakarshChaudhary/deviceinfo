@@ -41,7 +41,7 @@ export const BatteryCards = ({
   powerSaving,
 }: BatteryCardsProps) => {
   const healthColor =
-    healthStatus.toLowerCase() === "good" ? "#047857" : "#B45309";
+    healthStatus.toLowerCase() === "good" ? colors.icon.green : colors.icon.orange;
 
   return (
     <View style={styles.cardsSection}>
@@ -56,7 +56,7 @@ export const BatteryCards = ({
               <Text style={styles.headerTitle}>Charging Overview</Text>
             </View>
             <View style={styles.headerIconBadge}>
-              <Ionicons name="battery-full" size={18} color="#1D4ED8" />
+              <Ionicons name="battery-full" size={18} color={colors.icon.blue} />
             </View>
           </View>
 
@@ -73,7 +73,7 @@ export const BatteryCards = ({
 
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeader}>
-              <Ionicons name="flash" size={14} color="#1D4ED8" />
+              <Ionicons name="flash" size={14} color={colors.icon.blue} />
               <Text style={styles.sectionTitle}>Charging</Text>
             </View>
             <DetailRow label="Type" value={chargingType} />
@@ -96,7 +96,7 @@ export const BatteryCards = ({
 
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeader}>
-              <Ionicons name="leaf" size={14} color="#047857" />
+              <Ionicons name="leaf" size={14} color={colors.icon.green} />
               <Text style={styles.sectionTitle}>Device Details</Text>
             </View>
             <DetailRow label="Manufacturer" value={batteryManufacturer} />
@@ -114,11 +114,11 @@ const styles = StyleSheet.create({
     marginTop: 25,
   },
   panel: {
-    backgroundColor: "#F8FAFC",
+    backgroundColor: colors.card.base,
     borderRadius: 22,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: colors.border,
     maxHeight: 435,
   },
   panelContent: {
@@ -179,11 +179,11 @@ const styles = StyleSheet.create({
   },
   sectionCard: {
     marginTop: 10,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.card.elevated,
     borderRadius: 14,
     padding: 12,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: colors.border,
   },
   sectionHeader: {
     flexDirection: "row",
