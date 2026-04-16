@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
   },
   quickStatValue: {
-    marginTop: 6,
+    marginTop: 5,
     fontSize: 21,
     fontWeight: "800",
     color: colors.text.primary,
