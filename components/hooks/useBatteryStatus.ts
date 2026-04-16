@@ -36,7 +36,7 @@ const formatTemperature = (value?: number | null) => {
 
 const formatVoltage = (value?: number | null) => {
   if (typeof value !== "number" || value < 0) return "N/A";
-  return `${Math.round(value)} mV`;
+  return `${(value / 1000).toFixed(2)} V`;
 };
 
 const formatCapacity = (value?: number | null) => {
@@ -104,7 +104,7 @@ export const useBatteryStatus = () => {
   const [estimatedTime, setEstimatedTime] = useState("N/A");
   const [batteryHealth, setBatteryHealth] = useState("Unknown");
   const [batteryTechnology, setBatteryTechnology] = useState("Unknown");
-  const [chargingType, setChargingType] = useState("Unplugged");
+  const [chargingType, setChargingType] = useState("Battery");
 
   useEffect(() => {
     let mounted = true;
@@ -126,8 +126,19 @@ export const useBatteryStatus = () => {
       setBatteryTemperature(formatTemperature(nativeDetails.temperatureC));
       setBatteryVoltage(formatVoltage(nativeDetails.voltageMv));
       setBatteryCapacity(formatCapacity(nativeDetails.capacityMah));
-      setChargingSpeed(formatChargingSpeed(nativeDetails.chargingCurrentMa, nativeDetails.capacityMah));
-      setEstimatedTime(formatEstimatedTime(nativeDetails.chargingCurrentMa, nativeDetails.capacityMah, level));
+      setChargingSpeed(
+        formatChargingSpeed(
+          nativeDetails.chargingCurrentMa,
+          nativeDetails.capacityMah,
+        ),
+      );
+      setEstimatedTime(
+        formatEstimatedTime(
+          nativeDetails.chargingCurrentMa,
+          nativeDetails.capacityMah,
+          level,
+        ),
+      );
       setChargingType(nativeDetails.chargingType ?? "Unplugged");
       setBatteryHealth(nativeDetails.batteryHealth ?? "Unknown");
       setBatteryTechnology(nativeDetails.batteryTechnology ?? "Unknown");

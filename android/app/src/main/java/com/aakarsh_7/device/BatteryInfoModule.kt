@@ -58,7 +58,7 @@ class BatteryInfoModule(private val reactContext: ReactApplicationContext) :
         BatteryManager.BATTERY_PLUGGED_USB -> "USB"
         BatteryManager.BATTERY_PLUGGED_AC -> "AC"
         BatteryManager.BATTERY_PLUGGED_WIRELESS -> "Wireless"
-        else -> "Unplugged"
+        else -> "Battery"
       }
 
       val result = Arguments.createMap().apply {

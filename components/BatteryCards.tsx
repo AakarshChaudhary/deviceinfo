@@ -76,7 +76,7 @@ export const BatteryCards = ({
               <Ionicons name="flash" size={14} color={colors.icon.blue} />
               <Text style={styles.sectionTitle}>Charging</Text>
             </View>
-            <DetailRow label="Type" value={chargingType} />
+            <DetailRow label="Power Source" value={chargingType} />
             <DetailRow
               label="Power Saving"
               value={powerSaving ? "Active" : "Inactive"}
