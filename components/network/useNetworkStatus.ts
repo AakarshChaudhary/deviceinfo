@@ -62,6 +62,26 @@ const formatSignalStrength = (value?: number | null) => {
   return `${value} dBm`;
 };
 
+const getSignalStrengthLabel = (value?: number | null) => {
+  if (typeof value !== "number") {
+    return "Unknown";
+  }
+
+  if (value >= -60) {
+    return "Excellent";
+  }
+
+  if (value >= -70) {
+    return "Good";
+  }
+
+  if (value >= -80) {
+    return "Fair";
+  }
+
+  return "Weak";
+};
+
 const formatLinkSpeed = (value?: number | null) => {
   if (typeof value !== "number") {
     return "Unknown";
@@ -129,6 +149,7 @@ export const useNetworkStatus = () => {
   const [wifiSsid, setWifiSsid] = useState("Unknown");
   const [wifiBssid, setWifiBssid] = useState("Unknown");
   const [wifiRssi, setWifiRssi] = useState("Unknown");
+  const [wifiSignalQuality, setWifiSignalQuality] = useState("Unknown");
   const [wifiLinkSpeed, setWifiLinkSpeed] = useState("Unknown");
   const [wifiFrequency, setWifiFrequency] = useState("Unknown");
   const [wifiGateway, setWifiGateway] = useState("Unknown");
@@ -159,6 +180,7 @@ export const useNetworkStatus = () => {
       setWifiSsid(toDisplay(wifiDetails.ssid));
       setWifiBssid(toDisplay(wifiDetails.bssid));
       setWifiRssi(formatSignalStrength(wifiDetails.rssi));
+      setWifiSignalQuality(getSignalStrengthLabel(wifiDetails.rssi));
       setWifiLinkSpeed(formatLinkSpeed(wifiDetails.linkSpeed));
       setWifiFrequency(formatFrequency(wifiDetails.frequency));
       setWifiGateway(toDisplay(wifiDetails.gateway));
@@ -211,6 +233,7 @@ export const useNetworkStatus = () => {
     wifiSsid,
     wifiBssid,
     wifiRssi,
+    wifiSignalQuality,
     wifiLinkSpeed,
     wifiFrequency,
     wifiGateway,
