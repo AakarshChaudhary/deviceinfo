@@ -19,6 +19,15 @@ const Page = () => {
     internetReachability,
     mobileNetwork,
     meteredNetwork,
+    wifiSsid,
+    wifiBssid,
+    wifiRssi,
+    wifiLinkSpeed,
+    wifiFrequency,
+    wifiGateway,
+    wifiDns1,
+    wifiDns2,
+    wifiSecurity,
     refreshing,
     errorText,
     onRefresh,
@@ -80,6 +89,26 @@ const Page = () => {
               />
               <DetailRow label="Mobile Network" value={mobileNetwork} />
               <DetailRow label="Metered Network" value={meteredNetwork} />
+            </View>
+
+            <View style={styles.sectionCard}>
+              <View style={styles.sectionHeader}>
+                <Ionicons
+                  name="wifi-outline"
+                  size={14}
+                  color={colors.icon.blue}
+                />
+                <Text style={styles.sectionTitle}>Wi-Fi details</Text>
+              </View>
+              <DetailRow label="SSID" value={wifiSsid} />
+              <DetailRow label="BSSID" value={wifiBssid} />
+              <DetailRow label="Signal Strength" value={wifiRssi} />
+              <DetailRow label="Link Speed" value={wifiLinkSpeed} />
+              <DetailRow label="Frequency" value={wifiFrequency} />
+              <DetailRow label="Gateway" value={wifiGateway} />
+              <DetailRow label="DNS 1" value={wifiDns1} />
+              <DetailRow label="DNS 2" value={wifiDns2} />
+              <DetailRow label="Security" value={wifiSecurity} />
             </View>
           </ScrollView>
         </View>

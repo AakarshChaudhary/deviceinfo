@@ -1,10 +1,26 @@
 import * as Network from "expo-network";
 import { useCallback, useEffect, useState } from "react";
-import { Platform } from "react-native";
+import { NativeModules, PermissionsAndroid, Platform } from "react-native";
 
 type NetworkDetails = {
   cellularGeneration?: string | null;
   isConnectionExpensive?: boolean | null;
+};
+
+type NativeWifiDetails = {
+  ssid?: string | null;
+  bssid?: string | null;
+  rssi?: number | null;
+  linkSpeed?: number | null;
+  frequency?: number | null;
+  gateway?: string | null;
+  dns1?: string | null;
+  dns2?: string | null;
+  security?: string | null;
+};
+
+const wifiInfoModule = NativeModules.WifiInfoModule as {
+  getWifiDetails?: () => Promise<NativeWifiDetails>;
 };
 
 const toDisplay = (value: unknown) => {
@@ -37,11 +53,86 @@ const formatCellularGeneration = (value: string | null | undefined) => {
   return value.toUpperCase();
 };
 
+const formatSignalStrength = (value?: number | null) => {
+  if (typeof value !== "number") {
+    return "Unknown";
+  }
+  return `${value} dBm`;
+};
+
+const formatLinkSpeed = (value?: number | null) => {
+  if (typeof value !== "number") {
+    return "Unknown";
+  }
+  return `${value} Mbps`;
+};
+
+const formatFrequency = (value?: number | null) => {
+  if (typeof value !== "number") {
+    return "Unknown";
+  }
+  return `${(value / 1000).toFixed(2)} GHz`;
+};
+
+const requestWifiPermission = async () => {
+  if (Platform.OS !== "android") {
+    return false;
+  }
+
+  try {
+    const granted = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    );
+
+    if (granted) {
+      return true;
+    }
+
+    const permissionResult = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    );
+
+    return permissionResult === PermissionsAndroid.RESULTS.GRANTED;
+  } catch {
+    return false;
+  }
+};
+
+const getNativeWifiDetails = async (): Promise<NativeWifiDetails> => {
+  if (Platform.OS !== "android" || !wifiInfoModule?.getWifiDetails) {
+    return {};
+  }
+
+  const hasPermission = await requestWifiPermission();
+  if (!hasPermission) {
+    return {
+      ssid: "Permission required",
+      bssid: "Permission required",
+      gateway: "Permission required",
+    };
+  }
+
+  try {
+    return await wifiInfoModule.getWifiDetails();
+  } catch {
+    return {};
+  }
+};
+
 export const useNetworkStatus = () => {
   const liveState = Network.useNetworkState();
   const [ipAddress, setIpAddress] = useState("Loading...");
   const [airplaneMode, setAirplaneMode] = useState("Checking...");
   const [details, setDetails] = useState<NetworkDetails>({});
+  const [wifiSsid, setWifiSsid] = useState("Unknown");
+  const [wifiBssid, setWifiBssid] = useState("Unknown");
+  const [wifiRssi, setWifiRssi] = useState("Unknown");
+  const [wifiLinkSpeed, setWifiLinkSpeed] = useState("Unknown");
+  const [wifiFrequency, setWifiFrequency] = useState("Unknown");
+  const [wifiGateway, setWifiGateway] = useState("Unknown");
+  const [wifiDns1, setWifiDns1] = useState("Unknown");
+  const [wifiDns2, setWifiDns2] = useState("Unknown");
+  const [wifiSecurity, setWifiSecurity] = useState("Unknown");
   const [refreshing, setRefreshing] = useState(false);
   const [errorText, setErrorText] = useState<string | null>(null);
 
@@ -49,9 +140,10 @@ export const useNetworkStatus = () => {
     setErrorText(null);
 
     try {
-      const [state, ip] = await Promise.all([
+      const [state, ip, wifiDetails] = await Promise.all([
         Network.getNetworkStateAsync(),
         Network.getIpAddressAsync(),
+        getNativeWifiDetails(),
       ]);
 
       setIpAddress(ip || "0.0.0.0");
@@ -60,6 +152,15 @@ export const useNetworkStatus = () => {
         details?: NetworkDetails;
       };
       setDetails(stateWithDetails.details ?? {});
+      setWifiSsid(toDisplay(wifiDetails.ssid));
+      setWifiBssid(toDisplay(wifiDetails.bssid));
+      setWifiRssi(formatSignalStrength(wifiDetails.rssi));
+      setWifiLinkSpeed(formatLinkSpeed(wifiDetails.linkSpeed));
+      setWifiFrequency(formatFrequency(wifiDetails.frequency));
+      setWifiGateway(toDisplay(wifiDetails.gateway));
+      setWifiDns1(toDisplay(wifiDetails.dns1));
+      setWifiDns2(toDisplay(wifiDetails.dns2));
+      setWifiSecurity(toDisplay(wifiDetails.security));
 
       try {
         const airplane = await Network.isAirplaneModeEnabledAsync();
@@ -101,6 +202,15 @@ export const useNetworkStatus = () => {
     internetReachability,
     mobileNetwork,
     meteredNetwork,
+    wifiSsid,
+    wifiBssid,
+    wifiRssi,
+    wifiLinkSpeed,
+    wifiFrequency,
+    wifiGateway,
+    wifiDns1,
+    wifiDns2,
+    wifiSecurity,
     refreshing,
     errorText,
     onRefresh,
