@@ -13,6 +13,8 @@ type NativeWifiDetails = {
   rssi?: number | null;
   linkSpeed?: number | null;
   frequency?: number | null;
+  channel?: string | null;
+  wifiStandard?: string | null;
   gateway?: string | null;
   subnetMask?: string | null;
   interfaceName?: string | null;
@@ -161,12 +163,14 @@ export const useNetworkStatus = () => {
   const [wifiSignalQuality, setWifiSignalQuality] = useState("Unknown");
   const [wifiLinkSpeed, setWifiLinkSpeed] = useState("Unknown");
   const [wifiFrequency, setWifiFrequency] = useState("Unknown");
+  const [wifiChannel, setWifiChannel] = useState("Unknown");
   const [wifiGateway, setWifiGateway] = useState("Unknown");
   const [networkSubnetMask, setNetworkSubnetMask] = useState("Unknown");
   const [networkInterfaceName, setNetworkInterfaceName] = useState("Unknown");
   const [wifiDns1, setWifiDns1] = useState("Unknown");
   const [wifiDns2, setWifiDns2] = useState("Unknown");
   const [wifiLeaseDuration, setWifiLeaseDuration] = useState("Unknown");
+  const [wifiStandard, setWifiStandard] = useState("Unknown");
   const [wifiSecurity, setWifiSecurity] = useState("Unknown");
   const [refreshing, setRefreshing] = useState(false);
   const [errorText, setErrorText] = useState<string | null>(null);
@@ -193,12 +197,14 @@ export const useNetworkStatus = () => {
       setWifiSignalQuality(getSignalStrengthLabel(wifiDetails.rssi));
       setWifiLinkSpeed(formatLinkSpeed(wifiDetails.linkSpeed));
       setWifiFrequency(formatFrequency(wifiDetails.frequency));
+      setWifiChannel(toDisplay(wifiDetails.channel));
       setWifiGateway(toDisplay(wifiDetails.gateway));
       setNetworkSubnetMask(toDisplay(wifiDetails.subnetMask));
       setNetworkInterfaceName(toDisplay(wifiDetails.interfaceName));
       setWifiDns1(toDisplay(wifiDetails.dns1));
       setWifiDns2(toDisplay(wifiDetails.dns2));
       setWifiLeaseDuration(formatLeaseDuration(wifiDetails.leaseDuration));
+      setWifiStandard(toDisplay(wifiDetails.wifiStandard));
       setWifiSecurity(toDisplay(wifiDetails.security));
 
       try {
@@ -247,12 +253,14 @@ export const useNetworkStatus = () => {
     wifiSignalQuality,
     wifiLinkSpeed,
     wifiFrequency,
+    wifiChannel,
     wifiGateway,
     networkSubnetMask,
     networkInterfaceName,
     wifiDns1,
     wifiDns2,
     wifiLeaseDuration,
+    wifiStandard,
     wifiSecurity,
     refreshing,
     errorText,

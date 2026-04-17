@@ -23,6 +23,8 @@ type NetworkCardsProps = {
   wifiSignalQuality: string;
   wifiLinkSpeed: string;
   wifiFrequency: string;
+  wifiChannel: string;
+  wifiStandard: string;
   wifiGateway: string;
   networkSubnetMask: string;
   networkInterfaceName: string;
@@ -61,6 +63,8 @@ export const NetworkCards = ({
   wifiSignalQuality,
   wifiLinkSpeed,
   wifiFrequency,
+  wifiChannel,
+  wifiStandard,
   wifiGateway,
   networkSubnetMask,
   networkInterfaceName,
@@ -146,6 +150,8 @@ export const NetworkCards = ({
             <DetailRow label="Signal Quality" value={wifiSignalQuality} />
             <DetailRow label="Link Speed" value={wifiLinkSpeed} />
             <DetailRow label="Frequency" value={wifiFrequency} />
+            <DetailRow label="Channel" value={wifiChannel} />
+            <DetailRow label="Wi-Fi Standard" value={wifiStandard} />
             <DetailRow label="Gateway" value={wifiGateway} />
             <DetailRow label="Lease Duration" value={wifiLeaseDuration} />
             <DetailRow label="DNS 1" value={wifiDns1} />

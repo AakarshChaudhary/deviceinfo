@@ -60,6 +60,9 @@ class WifiInfoModule(private val reactContext: ReactApplicationContext) :
           putNull("frequency")
         }
 
+        putString("channel", getWifiChannel(frequency))
+        putString("wifiStandard", getWifiStandardLabel(wifiInfo))
+
         val gatewayAddress = dhcpInfo?.gateway ?: 0
         if (gatewayAddress != 0) {
           putString("gateway", intToIp(gatewayAddress))
@@ -155,6 +158,31 @@ class WifiInfoModule(private val reactContext: ReactApplicationContext) :
       prefixLengthToSubnetMask(ipv4PrefixLength)
     } catch (_: Exception) {
       "Unknown"
+    }
+  }
+
+  private fun getWifiStandardLabel(wifiInfo: android.net.wifi.WifiInfo?): String {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return "Unknown"
+
+    return when (wifiInfo?.wifiStandard) {
+      ScanResult.WIFI_STANDARD_11N -> "WiFi 4"
+      ScanResult.WIFI_STANDARD_11AC -> "WiFi 5"
+      ScanResult.WIFI_STANDARD_11AX -> "WiFi 6"
+      ScanResult.WIFI_STANDARD_11BE -> "WiFi 7"
+      ScanResult.WIFI_STANDARD_LEGACY -> "Legacy"
+      else -> "Unknown"
+    }
+  }
+
+  private fun getWifiChannel(frequency: Int?): String {
+    val value = frequency ?: return "Unknown"
+
+    return when {
+      value in 2412..2472 -> ((value - 2407) / 5).toString()
+      value == 2484 -> "14"
+      value in 5000..5895 -> ((value - 5000) / 5).toString()
+      value in 5955..7115 -> ((value - 5950) / 5).toString()
+      else -> "Unknown"
     }
   }
 
