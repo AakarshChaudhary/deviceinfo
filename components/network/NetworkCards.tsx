@@ -28,6 +28,7 @@ type NetworkCardsProps = {
   networkInterfaceName: string;
   wifiDns1: string;
   wifiDns2: string;
+  wifiLeaseDuration: string;
   wifiSecurity: string;
   refreshing: boolean;
   errorText: string | null;
@@ -65,6 +66,7 @@ export const NetworkCards = ({
   networkInterfaceName,
   wifiDns1,
   wifiDns2,
+  wifiLeaseDuration,
   wifiSecurity,
   refreshing,
   errorText,
@@ -145,6 +147,7 @@ export const NetworkCards = ({
             <DetailRow label="Link Speed" value={wifiLinkSpeed} />
             <DetailRow label="Frequency" value={wifiFrequency} />
             <DetailRow label="Gateway" value={wifiGateway} />
+            <DetailRow label="Lease Duration" value={wifiLeaseDuration} />
             <DetailRow label="DNS 1" value={wifiDns1} />
             <DetailRow label="DNS 2" value={wifiDns2} />
             <DetailRow label="Security" value={wifiSecurity} />

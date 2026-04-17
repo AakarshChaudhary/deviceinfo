@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.uimanager.ViewManager
+import java.net.Inet4Address
 
 class WifiInfoModule(private val reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
@@ -66,12 +67,14 @@ class WifiInfoModule(private val reactContext: ReactApplicationContext) :
           putString("gateway", "Unknown")
         }
 
-        val subnetMaskAddress = dhcpInfo?.netmask ?: 0
-        if (subnetMaskAddress != 0) {
-          putString("subnetMask", intToIp(subnetMaskAddress))
+        val leaseDuration = dhcpInfo?.leaseDuration
+        if (leaseDuration != null && leaseDuration > 0) {
+          putInt("leaseDuration", leaseDuration)
         } else {
-          putString("subnetMask", "Unknown")
+          putNull("leaseDuration")
         }
+
+        putString("subnetMask", getSubnetMask())
 
         putString("interfaceName", getActiveInterfaceName())
 
@@ -138,6 +141,34 @@ class WifiInfoModule(private val reactContext: ReactApplicationContext) :
     } catch (_: Exception) {
       "Unknown"
     }
+  }
+
+  private fun getSubnetMask(): String {
+    return try {
+      val connectivityManager =
+        reactContext.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+      val network = connectivityManager.activeNetwork ?: return "Unknown"
+      val linkProperties = connectivityManager.getLinkProperties(network) ?: return "Unknown"
+      val ipv4PrefixLength =
+        linkProperties.linkAddresses.firstOrNull { it.address is Inet4Address }?.prefixLength
+          ?: return "Unknown"
+      prefixLengthToSubnetMask(ipv4PrefixLength)
+    } catch (_: Exception) {
+      "Unknown"
+    }
+  }
+
+  private fun prefixLengthToSubnetMask(prefixLength: Int): String {
+    if (prefixLength < 0 || prefixLength > 32) return "Unknown"
+
+    var remaining = prefixLength
+    val octets = IntArray(4)
+    for (index in octets.indices) {
+      val bits = minOf(8, remaining)
+      octets[index] = if (bits == 0) 0 else ((0xFF shl (8 - bits)) and 0xFF)
+      remaining -= bits
+    }
+    return "${octets[0]}.${octets[1]}.${octets[2]}.${octets[3]}"
   }
 
   private fun intToIp(value: Int): String {

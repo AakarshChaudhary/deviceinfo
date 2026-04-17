@@ -18,6 +18,7 @@ type NativeWifiDetails = {
   interfaceName?: string | null;
   dns1?: string | null;
   dns2?: string | null;
+  leaseDuration?: number | null;
   security?: string | null;
 };
 
@@ -89,6 +90,14 @@ const formatLinkSpeed = (value?: number | null) => {
   return `${value} Mbps`;
 };
 
+const formatLeaseDuration = (value?: number | null) => {
+  if (typeof value !== "number" || value <= 0) {
+    return "Unknown";
+  }
+  const hours = value / 3600;
+  return `${hours.toFixed(2)} hr`;
+};
+
 const formatFrequency = (value?: number | null) => {
   if (typeof value !== "number") {
     return "Unknown";
@@ -157,6 +166,7 @@ export const useNetworkStatus = () => {
   const [networkInterfaceName, setNetworkInterfaceName] = useState("Unknown");
   const [wifiDns1, setWifiDns1] = useState("Unknown");
   const [wifiDns2, setWifiDns2] = useState("Unknown");
+  const [wifiLeaseDuration, setWifiLeaseDuration] = useState("Unknown");
   const [wifiSecurity, setWifiSecurity] = useState("Unknown");
   const [refreshing, setRefreshing] = useState(false);
   const [errorText, setErrorText] = useState<string | null>(null);
@@ -188,6 +198,7 @@ export const useNetworkStatus = () => {
       setNetworkInterfaceName(toDisplay(wifiDetails.interfaceName));
       setWifiDns1(toDisplay(wifiDetails.dns1));
       setWifiDns2(toDisplay(wifiDetails.dns2));
+      setWifiLeaseDuration(formatLeaseDuration(wifiDetails.leaseDuration));
       setWifiSecurity(toDisplay(wifiDetails.security));
 
       try {
@@ -241,6 +252,7 @@ export const useNetworkStatus = () => {
     networkInterfaceName,
     wifiDns1,
     wifiDns2,
+    wifiLeaseDuration,
     wifiSecurity,
     refreshing,
     errorText,
