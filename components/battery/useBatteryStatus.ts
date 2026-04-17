@@ -8,6 +8,7 @@ type NativeBatteryDetails = {
   voltageMv?: number | null;
   capacityMah?: number | null;
   chargingCurrentMa?: number | null;
+  dischargingCurrentMa?: number | null;
   chargingType?: string | null;
   batteryHealth?: string | null;
   batteryTechnology?: string | null;
@@ -70,13 +71,16 @@ const formatEstimatedTime = (
   currentMa?: number | null,
   capacityMah?: number | null,
   batteryLevel?: number,
+  isCharging?: boolean,
 ) => {
   if (typeof currentMa !== "number" || currentMa <= 0) return "N/A";
   if (typeof capacityMah !== "number" || capacityMah <= 0) return "N/A";
   if (typeof batteryLevel !== "number" || batteryLevel < 0 || batteryLevel >= 1)
     return "N/A";
 
-  const remainingRatio = 1 - batteryLevel;
+  const remainingRatio = isCharging ? 1 - batteryLevel : batteryLevel;
+  if (remainingRatio <= 0) return "N/A";
+
   const remainingMah = capacityMah * remainingRatio;
   const hours = remainingMah / currentMa;
   if (hours <= 0) return "N/A";
@@ -101,6 +105,7 @@ export const useBatteryStatus = () => {
   const [batteryVoltage, setBatteryVoltage] = useState("N/A");
   const [batteryCapacity, setBatteryCapacity] = useState("N/A");
   const [chargingSpeed, setChargingSpeed] = useState("N/A");
+  const [estimatedTimeLabel, setEstimatedTimeLabel] = useState("Time to Full");
   const [estimatedTime, setEstimatedTime] = useState("N/A");
   const [batteryHealth, setBatteryHealth] = useState("Unknown");
   const [batteryTechnology, setBatteryTechnology] = useState("Unknown");
@@ -131,11 +136,21 @@ export const useBatteryStatus = () => {
         nativeDetails.capacityMah,
       ),
     );
+
+    const isCharging =
+      state === Battery.BatteryState.CHARGING ||
+      state === Battery.BatteryState.FULL;
+    const activeCurrentMa = isCharging
+      ? nativeDetails.chargingCurrentMa
+      : nativeDetails.dischargingCurrentMa;
+
+    setEstimatedTimeLabel(isCharging ? "Time to Full" : "Time to Discharge");
     setEstimatedTime(
       formatEstimatedTime(
-        nativeDetails.chargingCurrentMa,
+        activeCurrentMa,
         nativeDetails.capacityMah,
         level,
+        isCharging,
       ),
     );
     setChargingType(nativeDetails.chargingType ?? "Unplugged");
@@ -195,6 +210,7 @@ export const useBatteryStatus = () => {
     batteryVoltage,
     batteryCapacity,
     chargingSpeed,
+    estimatedTimeLabel,
     estimatedTime,
     chargingType,
     batteryHealth,

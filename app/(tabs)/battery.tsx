@@ -23,6 +23,7 @@ const Page = () => {
     batteryVoltage,
     batteryCapacity,
     chargingSpeed,
+    estimatedTimeLabel,
     estimatedTime,
     chargingType,
     batteryHealth,
@@ -47,6 +48,7 @@ const Page = () => {
         batteryVoltage={batteryVoltage}
         batteryCapacity={batteryCapacity}
         chargingSpeed={chargingSpeed}
+        estimatedTimeLabel={estimatedTimeLabel}
         estimatedTime={estimatedTime}
         chargingType={chargingType}
         batteryTechnology={batteryTechnology}

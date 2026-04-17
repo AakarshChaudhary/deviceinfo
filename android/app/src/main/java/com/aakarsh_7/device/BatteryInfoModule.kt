@@ -36,7 +36,7 @@ class BatteryInfoModule(private val reactContext: ReactApplicationContext) :
       val capacityPercent = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
       val chargeCounterMicroAh =
         batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER)
-      val currentNowMicroAmp = batteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
+      val currentNowMaRaw = batteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
 
       val capacityMah = if (chargeCounterMicroAh > 0 && capacityPercent in 1..100) {
         val remainingMah = chargeCounterMicroAh / 1000.0
@@ -48,8 +48,20 @@ class BatteryInfoModule(private val reactContext: ReactApplicationContext) :
       val isCharging = statusRaw == BatteryManager.BATTERY_STATUS_CHARGING ||
         statusRaw == BatteryManager.BATTERY_STATUS_FULL
 
-      val chargingCurrentMa = if (isCharging && currentNowMicroAmp != 0L) {
-        abs(currentNowMicroAmp).toDouble()
+      val currentNowMa = if (currentNowMaRaw != 0L) {
+        abs(currentNowMaRaw).toDouble()
+      } else {
+        null
+      }
+
+      val chargingCurrentMa = if (isCharging) {
+        currentNowMa
+      } else {
+        null
+      }
+
+      val dischargingCurrentMa = if (!isCharging) {
+        currentNowMa
       } else {
         null
       }
@@ -86,6 +98,12 @@ class BatteryInfoModule(private val reactContext: ReactApplicationContext) :
           putDouble("chargingCurrentMa", chargingCurrentMa)
         } else {
           putNull("chargingCurrentMa")
+        }
+
+        if (dischargingCurrentMa != null) {
+          putDouble("dischargingCurrentMa", dischargingCurrentMa)
+        } else {
+          putNull("dischargingCurrentMa")
         }
 
         putString("chargingType", chargingType)
