@@ -107,6 +107,14 @@ const formatFrequency = (value?: number | null) => {
   return `${(value / 1000).toFixed(2)} GHz`;
 };
 
+const getWifiBand = (value?: number | null) => {
+  if (typeof value !== "number") return "Unknown";
+  if (value >= 5925 && value <= 7125) return "6 GHz";
+  if (value >= 5170 && value <= 5895) return "5 GHz";
+  if (value >= 2400 && value <= 2500) return "2.4 GHz";
+  return "Unknown";
+};
+
 const requestWifiPermission = async () => {
   if (Platform.OS !== "android") {
     return false;
@@ -163,6 +171,7 @@ export const useNetworkStatus = () => {
   const [wifiSignalQuality, setWifiSignalQuality] = useState("Unknown");
   const [wifiLinkSpeed, setWifiLinkSpeed] = useState("Unknown");
   const [wifiFrequency, setWifiFrequency] = useState("Unknown");
+  const [wifiBand, setWifiBand] = useState("Unknown");
   const [wifiChannel, setWifiChannel] = useState("Unknown");
   const [wifiGateway, setWifiGateway] = useState("Unknown");
   const [networkSubnetMask, setNetworkSubnetMask] = useState("Unknown");
@@ -197,6 +206,7 @@ export const useNetworkStatus = () => {
       setWifiSignalQuality(getSignalStrengthLabel(wifiDetails.rssi));
       setWifiLinkSpeed(formatLinkSpeed(wifiDetails.linkSpeed));
       setWifiFrequency(formatFrequency(wifiDetails.frequency));
+      setWifiBand(getWifiBand(wifiDetails.frequency));
       setWifiChannel(toDisplay(wifiDetails.channel));
       setWifiGateway(toDisplay(wifiDetails.gateway));
       setNetworkSubnetMask(toDisplay(wifiDetails.subnetMask));
@@ -253,6 +263,7 @@ export const useNetworkStatus = () => {
     wifiSignalQuality,
     wifiLinkSpeed,
     wifiFrequency,
+    wifiBand,
     wifiChannel,
     wifiGateway,
     networkSubnetMask,

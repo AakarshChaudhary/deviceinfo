@@ -1,11 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import { colors } from "../theme/color";
 
@@ -23,6 +23,7 @@ type NetworkCardsProps = {
   wifiSignalQuality: string;
   wifiLinkSpeed: string;
   wifiFrequency: string;
+  wifiBand: string;
   wifiChannel: string;
   wifiStandard: string;
   wifiGateway: string;
@@ -63,6 +64,7 @@ export const NetworkCards = ({
   wifiSignalQuality,
   wifiLinkSpeed,
   wifiFrequency,
+  wifiBand,
   wifiChannel,
   wifiStandard,
   wifiGateway,
@@ -123,16 +125,16 @@ export const NetworkCards = ({
               <Ionicons name="options" size={14} color={colors.icon.green} />
               <Text style={styles.sectionTitle}>Connection details</Text>
             </View>
-            <DetailRow label="IP Address" value={ipAddress} />
-            <DetailRow label="Subnet Mask" value={networkSubnetMask} />
-            <DetailRow label="Interface Name" value={networkInterfaceName} />
-            <DetailRow label="Airplane Mode" value={airplaneMode} />
             <DetailRow
               label="Internet Reachability"
               value={internetReachability}
             />
-            <DetailRow label="Mobile Network" value={mobileNetwork} />
+            <DetailRow label="IP Address" value={ipAddress} />
+            <DetailRow label="Subnet Mask" value={networkSubnetMask} />
+            <DetailRow label="Interface Name" value={networkInterfaceName} />
             <DetailRow label="Metered Network" value={meteredNetwork} />
+            <DetailRow label="Airplane Mode" value={airplaneMode} />
+            <DetailRow label="Mobile Network" value={mobileNetwork} />
           </View>
 
           <View style={styles.sectionCard}>
@@ -145,18 +147,19 @@ export const NetworkCards = ({
               <Text style={styles.sectionTitle}>Wi-Fi details</Text>
             </View>
             <DetailRow label="SSID" value={wifiSsid} />
+            <DetailRow label="Security" value={wifiSecurity} />
             <DetailRow label="BSSID" value={wifiBssid} />
             <DetailRow label="Signal Strength" value={wifiRssi} />
             <DetailRow label="Signal Quality" value={wifiSignalQuality} />
-            <DetailRow label="Link Speed" value={wifiLinkSpeed} />
+            <DetailRow label="Band" value={wifiBand} />
             <DetailRow label="Frequency" value={wifiFrequency} />
             <DetailRow label="Channel" value={wifiChannel} />
             <DetailRow label="Wi-Fi Standard" value={wifiStandard} />
+            <DetailRow label="Link Speed" value={wifiLinkSpeed} />
             <DetailRow label="Gateway" value={wifiGateway} />
-            <DetailRow label="Lease Duration" value={wifiLeaseDuration} />
             <DetailRow label="DNS 1" value={wifiDns1} />
             <DetailRow label="DNS 2" value={wifiDns2} />
-            <DetailRow label="Security" value={wifiSecurity} />
+            <DetailRow label="Lease Duration" value={wifiLeaseDuration} />
           </View>
         </ScrollView>
       </View>
