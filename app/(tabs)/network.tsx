@@ -25,6 +25,8 @@ const Page = () => {
     wifiLinkSpeed,
     wifiFrequency,
     wifiGateway,
+    networkSubnetMask,
+    networkInterfaceName,
     wifiDns1,
     wifiDns2,
     wifiSecurity,
@@ -82,6 +84,8 @@ const Page = () => {
                 <Text style={styles.sectionTitle}>Connection details</Text>
               </View>
               <DetailRow label="IP Address" value={ipAddress} />
+              <DetailRow label="Subnet Mask" value={networkSubnetMask} />
+              <DetailRow label="Interface Name" value={networkInterfaceName} />
               <DetailRow label="Airplane Mode" value={airplaneMode} />
               <DetailRow
                 label="Internet Reachability"
@@ -134,7 +138,6 @@ export default Page;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -148,7 +151,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderColor: colors.border,
-    maxHeight: 435,
+    maxHeight: 735,
   },
   panelContent: {
     paddingBottom: 5,

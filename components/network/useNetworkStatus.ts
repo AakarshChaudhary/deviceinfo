@@ -14,6 +14,8 @@ type NativeWifiDetails = {
   linkSpeed?: number | null;
   frequency?: number | null;
   gateway?: string | null;
+  subnetMask?: string | null;
+  interfaceName?: string | null;
   dns1?: string | null;
   dns2?: string | null;
   security?: string | null;
@@ -130,6 +132,8 @@ export const useNetworkStatus = () => {
   const [wifiLinkSpeed, setWifiLinkSpeed] = useState("Unknown");
   const [wifiFrequency, setWifiFrequency] = useState("Unknown");
   const [wifiGateway, setWifiGateway] = useState("Unknown");
+  const [networkSubnetMask, setNetworkSubnetMask] = useState("Unknown");
+  const [networkInterfaceName, setNetworkInterfaceName] = useState("Unknown");
   const [wifiDns1, setWifiDns1] = useState("Unknown");
   const [wifiDns2, setWifiDns2] = useState("Unknown");
   const [wifiSecurity, setWifiSecurity] = useState("Unknown");
@@ -158,6 +162,8 @@ export const useNetworkStatus = () => {
       setWifiLinkSpeed(formatLinkSpeed(wifiDetails.linkSpeed));
       setWifiFrequency(formatFrequency(wifiDetails.frequency));
       setWifiGateway(toDisplay(wifiDetails.gateway));
+      setNetworkSubnetMask(toDisplay(wifiDetails.subnetMask));
+      setNetworkInterfaceName(toDisplay(wifiDetails.interfaceName));
       setWifiDns1(toDisplay(wifiDetails.dns1));
       setWifiDns2(toDisplay(wifiDetails.dns2));
       setWifiSecurity(toDisplay(wifiDetails.security));
@@ -208,6 +214,8 @@ export const useNetworkStatus = () => {
     wifiLinkSpeed,
     wifiFrequency,
     wifiGateway,
+    networkSubnetMask,
+    networkInterfaceName,
     wifiDns1,
     wifiDns2,
     wifiSecurity,

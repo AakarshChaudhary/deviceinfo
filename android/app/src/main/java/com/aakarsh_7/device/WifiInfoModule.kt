@@ -1,6 +1,7 @@
 package com.aakarsh_7.device
 
 import android.content.Context
+import android.net.ConnectivityManager
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiManager
 import android.os.Build
@@ -65,6 +66,15 @@ class WifiInfoModule(private val reactContext: ReactApplicationContext) :
           putString("gateway", "Unknown")
         }
 
+        val subnetMaskAddress = dhcpInfo?.netmask ?: 0
+        if (subnetMaskAddress != 0) {
+          putString("subnetMask", intToIp(subnetMaskAddress))
+        } else {
+          putString("subnetMask", "Unknown")
+        }
+
+        putString("interfaceName", getActiveInterfaceName())
+
         val dns1Address = dhcpInfo?.dns1 ?: 0
         if (dns1Address != 0) {
           putString("dns1", intToIp(dns1Address))
@@ -115,6 +125,18 @@ class WifiInfoModule(private val reactContext: ReactApplicationContext) :
       "EAP" in caps -> "WPA2-EAP"
       caps.contains("ESS") -> "Open"
       else -> "Unknown"
+    }
+  }
+
+  private fun getActiveInterfaceName(): String {
+    return try {
+      val connectivityManager =
+        reactContext.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+      val network = connectivityManager.activeNetwork ?: return "Unknown"
+      val interfaceName = connectivityManager.getLinkProperties(network)?.interfaceName
+      if (interfaceName.isNullOrBlank()) "Unknown" else interfaceName
+    } catch (_: Exception) {
+      "Unknown"
     }
   }
 
