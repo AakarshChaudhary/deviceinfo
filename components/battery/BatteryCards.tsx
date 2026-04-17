@@ -1,6 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import colors from "../theme/color";
 
 type BatteryCardsProps = {
@@ -14,6 +20,8 @@ type BatteryCardsProps = {
   chargingType: string;
   healthStatus: string;
   powerSaving: boolean;
+  refreshing: boolean;
+  onRefresh: () => void | Promise<void>;
 };
 
 type DetailRowProps = {
@@ -39,9 +47,13 @@ export const BatteryCards = ({
   chargingType,
   healthStatus,
   powerSaving,
+  refreshing,
+  onRefresh,
 }: BatteryCardsProps) => {
   const healthColor =
-    healthStatus.toLowerCase() === "good" ? colors.icon.blue : colors.icon.orange;
+    healthStatus.toLowerCase() === "good"
+      ? colors.icon.blue
+      : colors.icon.orange;
 
   return (
     <View style={styles.cardsSection}>
@@ -49,6 +61,9 @@ export const BatteryCards = ({
         <ScrollView
           contentContainerStyle={styles.panelContent}
           showsVerticalScrollIndicator
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         >
           <View style={styles.headerRow}>
             <View>
@@ -56,7 +71,11 @@ export const BatteryCards = ({
               <Text style={styles.headerTitle}>Charging Overview</Text>
             </View>
             <View style={styles.headerIconBadge}>
-              <Ionicons name="battery-full" size={18} color={colors.icon.blue} />
+              <Ionicons
+                name="battery-full"
+                size={18}
+                color={colors.icon.blue}
+              />
             </View>
           </View>
 
@@ -206,7 +225,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
     color: colors.text.tertiary,
-
   },
   detailValue: {
     fontSize: 12,

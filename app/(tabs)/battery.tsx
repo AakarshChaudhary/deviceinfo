@@ -27,6 +27,8 @@ const Page = () => {
     chargingType,
     batteryHealth,
     batteryTechnology,
+    refreshing,
+    onRefresh,
   } = useBatteryStatus();
   const healthStatus = batteryHealth;
 
@@ -50,6 +52,8 @@ const Page = () => {
         batteryTechnology={batteryTechnology}
         healthStatus={healthStatus}
         powerSaving={powerSaving}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
       />
     </View>
   );

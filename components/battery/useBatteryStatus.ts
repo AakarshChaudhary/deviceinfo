@@ -1,5 +1,5 @@
 import * as Battery from "expo-battery";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { NativeModules, Platform } from "react-native";
 
 type NativeBatteryDetails = {
@@ -105,45 +105,54 @@ export const useBatteryStatus = () => {
   const [batteryHealth, setBatteryHealth] = useState("Unknown");
   const [batteryTechnology, setBatteryTechnology] = useState("Unknown");
   const [chargingType, setChargingType] = useState("Battery");
+  const [refreshing, setRefreshing] = useState(false);
+  const mounted = useRef(true);
+
+  const load = useCallback(async () => {
+    const [level, state, lowPowerMode, nativeDetails] = await Promise.all([
+      Battery.getBatteryLevelAsync(),
+      Battery.getBatteryStateAsync(),
+      Battery.isLowPowerModeEnabledAsync(),
+      getNativeBatteryDetails(),
+    ]);
+
+    if (!mounted.current) return;
+
+    if (level >= 0) setBatteryLevel(level);
+    setBatteryState(state);
+    setPowerSaving(lowPowerMode);
+    setBatteryManufacturer(formatManufacturer(nativeDetails.manufacturer));
+    setBatteryTemperature(formatTemperature(nativeDetails.temperatureC));
+    setBatteryVoltage(formatVoltage(nativeDetails.voltageMv));
+    setBatteryCapacity(formatCapacity(nativeDetails.capacityMah));
+    setChargingSpeed(
+      formatChargingSpeed(
+        nativeDetails.chargingCurrentMa,
+        nativeDetails.capacityMah,
+      ),
+    );
+    setEstimatedTime(
+      formatEstimatedTime(
+        nativeDetails.chargingCurrentMa,
+        nativeDetails.capacityMah,
+        level,
+      ),
+    );
+    setChargingType(nativeDetails.chargingType ?? "Unplugged");
+    setBatteryHealth(nativeDetails.batteryHealth ?? "Unknown");
+    setBatteryTechnology(nativeDetails.batteryTechnology ?? "Unknown");
+  }, []);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await load();
+    if (mounted.current) {
+      setRefreshing(false);
+    }
+  }, [load]);
 
   useEffect(() => {
-    let mounted = true;
-
-    const load = async () => {
-      const [level, state, lowPowerMode, nativeDetails] = await Promise.all([
-        Battery.getBatteryLevelAsync(),
-        Battery.getBatteryStateAsync(),
-        Battery.isLowPowerModeEnabledAsync(),
-        getNativeBatteryDetails(),
-      ]);
-
-      if (!mounted) return;
-
-      if (level >= 0) setBatteryLevel(level);
-      setBatteryState(state);
-      setPowerSaving(lowPowerMode);
-      setBatteryManufacturer(formatManufacturer(nativeDetails.manufacturer));
-      setBatteryTemperature(formatTemperature(nativeDetails.temperatureC));
-      setBatteryVoltage(formatVoltage(nativeDetails.voltageMv));
-      setBatteryCapacity(formatCapacity(nativeDetails.capacityMah));
-      setChargingSpeed(
-        formatChargingSpeed(
-          nativeDetails.chargingCurrentMa,
-          nativeDetails.capacityMah,
-        ),
-      );
-      setEstimatedTime(
-        formatEstimatedTime(
-          nativeDetails.chargingCurrentMa,
-          nativeDetails.capacityMah,
-          level,
-        ),
-      );
-      setChargingType(nativeDetails.chargingType ?? "Unplugged");
-      setBatteryHealth(nativeDetails.batteryHealth ?? "Unknown");
-      setBatteryTechnology(nativeDetails.batteryTechnology ?? "Unknown");
-    };
-
+    mounted.current = true;
     load();
 
     const intervalId = setInterval(() => {
@@ -169,13 +178,13 @@ export const useBatteryStatus = () => {
     );
 
     return () => {
-      mounted = false;
+      mounted.current = false;
       clearInterval(intervalId);
       levelSubscription.remove();
       stateSubscription.remove();
       powerSubscription.remove();
     };
-  }, []);
+  }, [load]);
 
   return {
     batteryLevel,
@@ -190,5 +199,7 @@ export const useBatteryStatus = () => {
     chargingType,
     batteryHealth,
     batteryTechnology,
+    refreshing,
+    onRefresh,
   };
 };
