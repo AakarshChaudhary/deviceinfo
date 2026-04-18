@@ -1,20 +1,24 @@
-import { View, Text, StyleSheet } from 'react-native'
-import React from 'react'
+import React from "react";
+import { StyleSheet, View } from "react-native";
+import { SystemCards } from "../../components/system/SystemCards";
+import { useSystemStatus } from "../../components/system/useSystemStatus";
 
 const Page = () => {
+  const systemStatus = useSystemStatus();
+
   return (
     <View style={styles.container}>
-      <Text>System Screen</Text>
+      <SystemCards {...systemStatus} />
     </View>
-  )
-}
+  );
+};
 
-export default Page
+export default Page;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-})
+    alignItems: "center",
+    marginTop: 50,
+  },
+});
