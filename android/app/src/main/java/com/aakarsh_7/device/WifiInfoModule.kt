@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.telephony.TelephonyManager
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.NativeModule
@@ -28,6 +29,8 @@ class WifiInfoModule(private val reactContext: ReactApplicationContext) :
         reactContext.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
       val wifiInfo = wifiManager.connectionInfo
       val dhcpInfo = wifiManager.dhcpInfo
+      val telephonyManager =
+        reactContext.applicationContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager
 
       val wifiSecurity = parseSecurityType(wifiInfo?.bssid, wifiManager.scanResults)
       val result = Arguments.createMap().apply {
@@ -94,6 +97,12 @@ class WifiInfoModule(private val reactContext: ReactApplicationContext) :
         } else {
           putString("dns2", "Unknown")
         }
+
+        putString("carrier", getCarrierName(telephonyManager))
+        putString("cellularNetworkType", getCellularNetworkType(telephonyManager))
+        putString("cellularSignalStrength", getCellularSignalStrength(telephonyManager))
+        putString("cellularRoaming", getCellularRoaming(telephonyManager))
+        putString("cellularDataState", getCellularDataState(telephonyManager))
       }
 
       promise.resolve(result)
@@ -131,6 +140,102 @@ class WifiInfoModule(private val reactContext: ReactApplicationContext) :
       "EAP" in caps -> "WPA2-EAP"
       caps.contains("ESS") -> "Open"
       else -> "Unknown"
+    }
+  }
+
+  private fun getCarrierName(telephonyManager: TelephonyManager?): String {
+    if (telephonyManager == null) return "Unknown"
+
+    return try {
+      val name = telephonyManager.networkOperatorName?.trim().orEmpty()
+      if (name.isEmpty()) "Unknown" else name
+    } catch (_: Exception) {
+      "Unknown"
+    }
+  }
+
+  private fun getCellularNetworkType(telephonyManager: TelephonyManager?): String {
+    if (telephonyManager == null) return "Unknown"
+
+    return try {
+      val networkType =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+          telephonyManager.dataNetworkType
+        } else {
+          @Suppress("DEPRECATION")
+          telephonyManager.networkType
+        }
+
+      when (networkType) {
+        TelephonyManager.NETWORK_TYPE_NR -> "5G"
+        TelephonyManager.NETWORK_TYPE_LTE -> "LTE"
+        19 -> "LTE+"
+        TelephonyManager.NETWORK_TYPE_HSPAP -> "HSPA+"
+        TelephonyManager.NETWORK_TYPE_HSPA -> "HSPA"
+        TelephonyManager.NETWORK_TYPE_HSDPA -> "HSDPA"
+        TelephonyManager.NETWORK_TYPE_HSUPA -> "HSUPA"
+        TelephonyManager.NETWORK_TYPE_UMTS -> "UMTS"
+        TelephonyManager.NETWORK_TYPE_EDGE -> "EDGE"
+        TelephonyManager.NETWORK_TYPE_GPRS -> "GPRS"
+        TelephonyManager.NETWORK_TYPE_CDMA -> "CDMA"
+        TelephonyManager.NETWORK_TYPE_1xRTT -> "1xRTT"
+        TelephonyManager.NETWORK_TYPE_EVDO_0 -> "EVDO rev.0"
+        TelephonyManager.NETWORK_TYPE_EVDO_A -> "EVDO rev.A"
+        TelephonyManager.NETWORK_TYPE_EVDO_B -> "EVDO rev.B"
+        TelephonyManager.NETWORK_TYPE_EHRPD -> "eHRPD"
+        TelephonyManager.NETWORK_TYPE_IDEN -> "iDEN"
+        TelephonyManager.NETWORK_TYPE_IWLAN -> "IWLAN"
+        TelephonyManager.NETWORK_TYPE_GSM -> "GSM"
+        TelephonyManager.NETWORK_TYPE_TD_SCDMA -> "TD-SCDMA"
+        else -> "Unknown"
+      }
+    } catch (_: Exception) {
+      "Unknown"
+    }
+  }
+
+  private fun getCellularSignalStrength(telephonyManager: TelephonyManager?): String {
+    if (telephonyManager == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+      return "Unknown"
+    }
+
+    return try {
+      val signalStrength = telephonyManager.signalStrength ?: return "Unknown"
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        val dbm = signalStrength.cellSignalStrengths.firstOrNull()?.dbm
+        if (dbm == null || dbm == Int.MAX_VALUE) "Unknown" else "$dbm dBm"
+      } else {
+        "${signalStrength.level}/4"
+      }
+    } catch (_: Exception) {
+      "Unknown"
+    }
+  }
+
+  private fun getCellularRoaming(telephonyManager: TelephonyManager?): String {
+    if (telephonyManager == null) return "Unknown"
+
+    return try {
+      if (telephonyManager.isNetworkRoaming) "Yes" else "No"
+    } catch (_: Exception) {
+      "Unknown"
+    }
+  }
+
+  private fun getCellularDataState(telephonyManager: TelephonyManager?): String {
+    if (telephonyManager == null) return "Unknown"
+
+    return try {
+      when (telephonyManager.dataState) {
+        TelephonyManager.DATA_CONNECTED -> "Connected"
+        TelephonyManager.DATA_CONNECTING -> "Connecting"
+        TelephonyManager.DATA_DISCONNECTED -> "Disconnected"
+        TelephonyManager.DATA_SUSPENDED -> "Suspended"
+        else -> "Unknown"
+      }
+    } catch (_: Exception) {
+      "Unknown"
     }
   }
 

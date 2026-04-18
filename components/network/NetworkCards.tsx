@@ -17,6 +17,11 @@ type NetworkCardsProps = {
   internetReachability: string;
   mobileNetwork: string;
   meteredNetwork: string;
+  carrier: string;
+  cellularNetworkType: string;
+  cellularSignalStrength: string;
+  cellularRoaming: string;
+  cellularDataState: string;
   wifiSsid: string;
   wifiBssid: string;
   wifiRssi: string;
@@ -58,6 +63,11 @@ export const NetworkCards = ({
   internetReachability,
   mobileNetwork,
   meteredNetwork,
+  carrier,
+  cellularNetworkType,
+  cellularSignalStrength,
+  cellularRoaming,
+  cellularDataState,
   wifiSsid,
   wifiBssid,
   wifiRssi,
@@ -134,7 +144,19 @@ export const NetworkCards = ({
             <DetailRow label="Interface Name" value={networkInterfaceName} />
             <DetailRow label="Metered Network" value={meteredNetwork} />
             <DetailRow label="Airplane Mode" value={airplaneMode} />
-            <DetailRow label="Mobile Network" value={mobileNetwork} />
+          </View>
+
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="cellular" size={14} color={colors.icon.orange} />
+              <Text style={styles.sectionTitle}>Cellular details</Text>
+            </View>
+            <DetailRow label="Carrier" value={carrier} />
+            <DetailRow label="Generation" value={mobileNetwork} />
+            <DetailRow label="Network Type" value={cellularNetworkType} />
+            <DetailRow label="Signal Strength" value={cellularSignalStrength} />
+            <DetailRow label="Roaming" value={cellularRoaming} />
+            <DetailRow label="Data State" value={cellularDataState} />
           </View>
 
           <View style={styles.sectionCard}>

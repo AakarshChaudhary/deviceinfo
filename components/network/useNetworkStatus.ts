@@ -22,6 +22,11 @@ type NativeWifiDetails = {
   dns2?: string | null;
   leaseDuration?: number | null;
   security?: string | null;
+  carrier?: string | null;
+  cellularNetworkType?: string | null;
+  cellularSignalStrength?: string | null;
+  cellularRoaming?: string | null;
+  cellularDataState?: string | null;
 };
 
 const wifiInfoModule = NativeModules.WifiInfoModule as {
@@ -181,6 +186,12 @@ export const useNetworkStatus = () => {
   const [wifiLeaseDuration, setWifiLeaseDuration] = useState("Unknown");
   const [wifiStandard, setWifiStandard] = useState("Unknown");
   const [wifiSecurity, setWifiSecurity] = useState("Unknown");
+  const [carrier, setCarrier] = useState("Unknown");
+  const [cellularNetworkType, setCellularNetworkType] = useState("Unknown");
+  const [cellularSignalStrength, setCellularSignalStrength] =
+    useState("Unknown");
+  const [cellularRoaming, setCellularRoaming] = useState("Unknown");
+  const [cellularDataState, setCellularDataState] = useState("Unknown");
   const [refreshing, setRefreshing] = useState(false);
   const [errorText, setErrorText] = useState<string | null>(null);
 
@@ -216,6 +227,11 @@ export const useNetworkStatus = () => {
       setWifiLeaseDuration(formatLeaseDuration(wifiDetails.leaseDuration));
       setWifiStandard(toDisplay(wifiDetails.wifiStandard));
       setWifiSecurity(toDisplay(wifiDetails.security));
+      setCarrier(toDisplay(wifiDetails.carrier));
+      setCellularNetworkType(toDisplay(wifiDetails.cellularNetworkType));
+      setCellularSignalStrength(toDisplay(wifiDetails.cellularSignalStrength));
+      setCellularRoaming(toDisplay(wifiDetails.cellularRoaming));
+      setCellularDataState(toDisplay(wifiDetails.cellularDataState));
 
       try {
         const airplane = await Network.isAirplaneModeEnabledAsync();
@@ -257,6 +273,11 @@ export const useNetworkStatus = () => {
     internetReachability,
     mobileNetwork,
     meteredNetwork,
+    carrier,
+    cellularNetworkType,
+    cellularSignalStrength,
+    cellularRoaming,
+    cellularDataState,
     wifiSsid,
     wifiBssid,
     wifiRssi,
