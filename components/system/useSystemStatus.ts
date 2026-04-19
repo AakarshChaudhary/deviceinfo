@@ -1,5 +1,53 @@
 import * as Device from "expo-device";
 import { useCallback, useEffect, useState } from "react";
+import { NativeModules, Platform } from "react-native";
+
+type NativeSystemDetails = {
+  hardware?: string | null;
+  board?: string | null;
+  codename?: string | null;
+  incrementalVersion?: string | null;
+  systemUiVersion?: string | null;
+  resolution?: string | null;
+  densityDpi?: string | null;
+  physicalSizeDiagonal?: string | null;
+  refreshRate?: string | null;
+  rotationOrientation?: string | null;
+  displayCutoutSafeArea?: string | null;
+  availableRam?: string | null;
+  memoryClass?: string | null;
+  largeMemoryClass?: string | null;
+  numberOfCores?: string | null;
+  totalInternalStorage?: string | null;
+  freeSpace?: string | null;
+  usedPercent?: string | null;
+  sdCardCapacity?: string | null;
+  deviceSecureLockStatus?: string | null;
+  fingerprintSensorPresence?: string | null;
+  emulatorDetection?: string | null;
+  bootloaderStatus?: string | null;
+  secureSettingsAvailability?: string | null;
+  localeLanguage?: string | null;
+  region?: string | null;
+  timezoneId?: string | null;
+  clockFormat?: string | null;
+};
+
+const systemInfoModule = NativeModules.SystemInfoModule as {
+  getSystemDetails?: () => Promise<NativeSystemDetails>;
+};
+
+const getNativeSystemDetails = async (): Promise<NativeSystemDetails> => {
+  if (Platform.OS !== "android" || !systemInfoModule?.getSystemDetails) {
+    return {};
+  }
+
+  try {
+    return await systemInfoModule.getSystemDetails();
+  } catch {
+    return {};
+  }
+};
 
 const toDisplay = (value: unknown) => {
   if (value === null || value === undefined) {
@@ -23,34 +71,6 @@ const formatName = (value: string | null | undefined) => {
   return `${trimmed[0].toUpperCase()}${trimmed.slice(1)}`;
 };
 
-const formatOsName = (value: string | null | undefined) => {
-  if (!value?.trim()) return "Unknown";
-  const trimmed = value.trim();
-  const isFingerprint =
-    trimmed.includes("/") &&
-    trimmed.includes(":") &&
-    trimmed.includes("release-keys");
-  if (isFingerprint) {
-    return "Android";
-  }
-  return `${trimmed[0].toUpperCase()}${trimmed.slice(1)}`;
-};
-
-const formatDeviceType = (value: Device.DeviceType | null | undefined) => {
-  switch (value) {
-    case Device.DeviceType.PHONE:
-      return "Phone";
-    case Device.DeviceType.TABLET:
-      return "Tablet";
-    case Device.DeviceType.DESKTOP:
-      return "Desktop";
-    case Device.DeviceType.TV:
-      return "TV";
-    default:
-      return "Unknown";
-  }
-};
-
 const formatCpuArchitectures = (value: string[] | null | undefined) => {
   if (!value || value.length === 0) {
     return "Unknown";
@@ -69,49 +89,115 @@ const formatTotalMemory = (value: number | null | undefined) => {
 };
 
 export const useSystemStatus = () => {
-  const [brand, setBrand] = useState("Unknown");
-  const [manufacturer, setManufacturer] = useState("Unknown");
-  const [modelName, setModelName] = useState("Unknown");
+  const [deviceBrand, setDeviceBrand] = useState("Unknown");
+  const [deviceModel, setDeviceModel] = useState("Unknown");
+  const [deviceManufacturer, setDeviceManufacturer] = useState("Unknown");
   const [deviceName, setDeviceName] = useState("Unknown");
-  const [osName, setOsName] = useState("Unknown");
-  const [osVersion, setOsVersion] = useState("Unknown");
-  const [osBuildId, setOsBuildId] = useState("Unknown");
-  const [deviceId, setDeviceId] = useState("Unknown");
-  const [deviceType, setDeviceType] = useState("Unknown");
-  const [isDevice, setIsDevice] = useState("Unknown");
-  const [isRooted, setIsRooted] = useState("Unknown");
-  const [supportedCpuArchitectures, setSupportedCpuArchitectures] =
+  const [deviceProduct, setDeviceProduct] = useState("Unknown");
+  const [deviceHardware, setDeviceHardware] = useState("Unknown");
+  const [deviceBoard, setDeviceBoard] = useState("Unknown");
+
+  const [androidVersion, setAndroidVersion] = useState("Unknown");
+  const [apiLevel, setApiLevel] = useState("Unknown");
+  const [codename, setCodename] = useState("Unknown");
+  const [buildId, setBuildId] = useState("Unknown");
+  const [buildDisplay, setBuildDisplay] = useState("Unknown");
+  const [incrementalVersion, setIncrementalVersion] = useState("Unknown");
+  const [systemUiVersion, setSystemUiVersion] = useState("Unknown");
+
+  const [resolution, setResolution] = useState("Unknown");
+  const [densityDpi, setDensityDpi] = useState("Unknown");
+  const [physicalSize, setPhysicalSize] = useState("Unknown");
+  const [refreshRate, setRefreshRate] = useState("Unknown");
+  const [rotationOrientation, setRotationOrientation] = useState("Unknown");
+  const [displayCutout, setDisplayCutout] = useState("Unknown");
+
+  const [totalRam, setTotalRam] = useState("Unknown");
+  const [availableRam, setAvailableRam] = useState("Unknown");
+  const [memoryClass, setMemoryClass] = useState("Unknown");
+  const [largeMemoryClass, setLargeMemoryClass] = useState("Unknown");
+  const [cpuAbiList, setCpuAbiList] = useState("Unknown");
+  const [numberOfCores, setNumberOfCores] = useState("Unknown");
+
+  const [totalInternalStorage, setTotalInternalStorage] = useState("Unknown");
+  const [freeSpace, setFreeSpace] = useState("Unknown");
+  const [usedPercent, setUsedPercent] = useState("Unknown");
+  const [sdCardCapacity, setSdCardCapacity] = useState("Unknown");
+
+  const [deviceSecureLockStatus, setDeviceSecureLockStatus] =
     useState("Unknown");
-  const [totalMemory, setTotalMemory] = useState("Unknown");
+  const [fingerprintSensorPresence, setFingerprintSensorPresence] =
+    useState("Unknown");
+  const [emulatorDetection, setEmulatorDetection] = useState("Unknown");
+  const [rootDetection, setRootDetection] = useState("Unknown");
+  const [bootloaderStatus, setBootloaderStatus] = useState("Unknown");
+  const [secureSettingsAvailability, setSecureSettingsAvailability] =
+    useState("Unknown");
+
+  const [localeLanguage, setLocaleLanguage] = useState("Unknown");
+  const [region, setRegion] = useState("Unknown");
+  const [timezoneId, setTimezoneId] = useState("Unknown");
+  const [clockFormat, setClockFormat] = useState("Unknown");
   const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
-    const rooted =
+    const [rooted, nativeDetails] = await Promise.all([
       typeof Device.isRootedExperimentalAsync === "function"
-        ? await Device.isRootedExperimentalAsync().catch(() => null)
-        : null;
+        ? Device.isRootedExperimentalAsync().catch(() => null)
+        : Promise.resolve(null),
+      getNativeSystemDetails(),
+    ]);
 
-    const typeValue =
-      Device.deviceType ??
-      (await Device.getDeviceTypeAsync().catch(() => null));
+    setDeviceBrand(formatName(Device.brand));
+    setDeviceModel(toDisplay(Device.modelName));
+    setDeviceManufacturer(formatName(Device.manufacturer));
+    setDeviceName(toDisplay(Device.designName));
+    setDeviceProduct(toDisplay(Device.productName));
+    setDeviceHardware(toDisplay(nativeDetails.hardware));
+    setDeviceBoard(toDisplay(nativeDetails.board));
 
-    setBrand(formatName(Device.brand));
-    setManufacturer(formatName(Device.manufacturer));
-    setModelName(toDisplay(Device.modelName));
-    setDeviceName(toDisplay(Device.deviceName));
-    setOsName(formatOsName(Device.osName));
-    setOsVersion(toDisplay(Device.osVersion));
-    setOsBuildId(toDisplay(Device.osBuildId));
+    setAndroidVersion(toDisplay(Device.osVersion));
+    setApiLevel(toDisplay(Device.platformApiLevel));
+    setCodename(toDisplay(nativeDetails.codename));
+    setBuildId(toDisplay(Device.osInternalBuildId));
+    setBuildDisplay(toDisplay(Device.osBuildId));
+    setIncrementalVersion(toDisplay(nativeDetails.incrementalVersion));
+    setSystemUiVersion(toDisplay(nativeDetails.systemUiVersion));
 
-    const rawDeviceId = (Device as any).deviceId;
-    setDeviceId(rawDeviceId ? toDisplay(rawDeviceId) : "Unavailable");
-    setDeviceType(formatDeviceType(typeValue));
-    setIsDevice(toDisplay(Device.isDevice));
-    setIsRooted(toDisplay(rooted));
-    setSupportedCpuArchitectures(
-      formatCpuArchitectures(Device.supportedCpuArchitectures),
+    setResolution(toDisplay(nativeDetails.resolution));
+    setDensityDpi(toDisplay(nativeDetails.densityDpi));
+    setPhysicalSize(toDisplay(nativeDetails.physicalSizeDiagonal));
+    setRefreshRate(toDisplay(nativeDetails.refreshRate));
+    setRotationOrientation(toDisplay(nativeDetails.rotationOrientation));
+    setDisplayCutout(toDisplay(nativeDetails.displayCutoutSafeArea));
+
+    setTotalRam(formatTotalMemory(Device.totalMemory));
+    setAvailableRam(toDisplay(nativeDetails.availableRam));
+    setMemoryClass(toDisplay(nativeDetails.memoryClass));
+    setLargeMemoryClass(toDisplay(nativeDetails.largeMemoryClass));
+    setCpuAbiList(formatCpuArchitectures(Device.supportedCpuArchitectures));
+    setNumberOfCores(toDisplay(nativeDetails.numberOfCores));
+
+    setTotalInternalStorage(toDisplay(nativeDetails.totalInternalStorage));
+    setFreeSpace(toDisplay(nativeDetails.freeSpace));
+    setUsedPercent(toDisplay(nativeDetails.usedPercent));
+    setSdCardCapacity(toDisplay(nativeDetails.sdCardCapacity));
+
+    setDeviceSecureLockStatus(toDisplay(nativeDetails.deviceSecureLockStatus));
+    setFingerprintSensorPresence(
+      toDisplay(nativeDetails.fingerprintSensorPresence),
     );
-    setTotalMemory(formatTotalMemory(Device.totalMemory));
+    setEmulatorDetection(toDisplay(nativeDetails.emulatorDetection));
+    setRootDetection(toDisplay(rooted));
+    setBootloaderStatus(toDisplay(nativeDetails.bootloaderStatus));
+    setSecureSettingsAvailability(
+      toDisplay(nativeDetails.secureSettingsAvailability),
+    );
+
+    setLocaleLanguage(toDisplay(nativeDetails.localeLanguage));
+    setRegion(toDisplay(nativeDetails.region));
+    setTimezoneId(toDisplay(nativeDetails.timezoneId));
+    setClockFormat(toDisplay(nativeDetails.clockFormat));
   }, []);
 
   const onRefresh = useCallback(async () => {
@@ -125,19 +211,53 @@ export const useSystemStatus = () => {
   }, [load]);
 
   return {
-    brand,
-    manufacturer,
-    modelName,
+    deviceBrand,
+    deviceModel,
+    deviceManufacturer,
     deviceName,
-    osName,
-    osVersion,
-    osBuildId,
-    deviceId,
-    deviceType,
-    isDevice,
-    isRooted,
-    supportedCpuArchitectures,
-    totalMemory,
+    deviceProduct,
+    deviceHardware,
+    deviceBoard,
+
+    androidVersion,
+    apiLevel,
+    codename,
+    buildId,
+    buildDisplay,
+    incrementalVersion,
+    systemUiVersion,
+
+    resolution,
+    densityDpi,
+    physicalSize,
+    refreshRate,
+    rotationOrientation,
+    displayCutout,
+
+    totalRam,
+    availableRam,
+    memoryClass,
+    largeMemoryClass,
+    cpuAbiList,
+    numberOfCores,
+
+    totalInternalStorage,
+    freeSpace,
+    usedPercent,
+    sdCardCapacity,
+
+    deviceSecureLockStatus,
+    fingerprintSensorPresence,
+    emulatorDetection,
+    rootDetection,
+    bootloaderStatus,
+    secureSettingsAvailability,
+
+    localeLanguage,
+    region,
+    timezoneId,
+    clockFormat,
+
     refreshing,
     onRefresh,
   };

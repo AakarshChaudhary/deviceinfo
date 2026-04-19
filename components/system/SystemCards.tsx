@@ -1,28 +1,62 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import { colors } from "../theme/color";
 
 type SystemCardsProps = {
-  brand: string;
-  manufacturer: string;
-  modelName: string;
+  deviceBrand: string;
+  deviceModel: string;
+  deviceManufacturer: string;
   deviceName: string;
-  osName: string;
-  osVersion: string;
-  osBuildId: string;
-  deviceId: string;
-  deviceType: string;
-  isDevice: string;
-  isRooted: string;
-  supportedCpuArchitectures: string;
-  totalMemory: string;
+  deviceProduct: string;
+  deviceHardware: string;
+  deviceBoard: string;
+
+  androidVersion: string;
+  apiLevel: string;
+  codename: string;
+  buildId: string;
+  buildDisplay: string;
+  incrementalVersion: string;
+  systemUiVersion: string;
+
+  resolution: string;
+  densityDpi: string;
+  physicalSize: string;
+  refreshRate: string;
+  rotationOrientation: string;
+  displayCutout: string;
+
+  totalRam: string;
+  availableRam: string;
+  memoryClass: string;
+  largeMemoryClass: string;
+  cpuAbiList: string;
+  numberOfCores: string;
+
+  totalInternalStorage: string;
+  freeSpace: string;
+  usedPercent: string;
+  sdCardCapacity: string;
+
+  deviceSecureLockStatus: string;
+  fingerprintSensorPresence: string;
+  emulatorDetection: string;
+  rootDetection: string;
+  bootloaderStatus: string;
+  secureSettingsAvailability: string;
+
+  localeLanguage: string;
+  region: string;
+  timezoneId: string;
+  clockFormat: string;
+
   refreshing: boolean;
   onRefresh: () => void | Promise<void>;
 };
@@ -40,19 +74,46 @@ const DetailRow = ({ label, value }: DetailRowProps) => (
 );
 
 export const SystemCards = ({
-  brand,
-  manufacturer,
-  modelName,
+  deviceBrand,
+  deviceModel,
+  deviceManufacturer,
   deviceName,
-  osName,
-  osVersion,
-  osBuildId,
-  deviceId,
-  deviceType,
-  isDevice,
-  isRooted,
-  supportedCpuArchitectures,
-  totalMemory,
+  deviceProduct,
+  deviceHardware,
+  deviceBoard,
+  androidVersion,
+  apiLevel,
+  codename,
+  buildId,
+  buildDisplay,
+  incrementalVersion,
+  systemUiVersion,
+  resolution,
+  densityDpi,
+  physicalSize,
+  refreshRate,
+  rotationOrientation,
+  displayCutout,
+  totalRam,
+  availableRam,
+  memoryClass,
+  largeMemoryClass,
+  cpuAbiList,
+  numberOfCores,
+  totalInternalStorage,
+  freeSpace,
+  usedPercent,
+  sdCardCapacity,
+  deviceSecureLockStatus,
+  fingerprintSensorPresence,
+  emulatorDetection,
+  rootDetection,
+  bootloaderStatus,
+  secureSettingsAvailability,
+  localeLanguage,
+  region,
+  timezoneId,
+  clockFormat,
   refreshing,
   onRefresh,
 }: SystemCardsProps) => {
@@ -69,7 +130,7 @@ export const SystemCards = ({
           <View style={styles.headerRow}>
             <View>
               <Text style={styles.headerLabel}>SYSTEM DASHBOARD</Text>
-              <Text style={styles.headerTitle}>Device Overview</Text>
+              <Text style={styles.headerTitle}>System Deep Info</Text>
             </View>
             <View style={styles.headerIconBadge}>
               <Ionicons
@@ -82,12 +143,12 @@ export const SystemCards = ({
 
           <View style={styles.quickStatsRow}>
             <View style={[styles.quickStatCard, styles.quickStatPrimary]}>
-              <Text style={styles.quickStatLabel}>OS</Text>
-              <Text style={styles.quickStatValue}>{osName}</Text>
+              <Text style={styles.quickStatLabel}>Android Version</Text>
+              <Text style={styles.quickStatValue}>{androidVersion}</Text>
             </View>
             <View style={[styles.quickStatCard, styles.quickStatSecondary]}>
-              <Text style={styles.quickStatLabel}>Device Type</Text>
-              <Text style={styles.quickStatValue}>{deviceType}</Text>
+              <Text style={styles.quickStatLabel}>Device</Text>
+              <Text style={styles.quickStatValue}>{deviceModel}</Text>
             </View>
           </View>
 
@@ -98,13 +159,15 @@ export const SystemCards = ({
                 size={14}
                 color={colors.icon.green}
               />
-              <Text style={styles.sectionTitle}>Device identity</Text>
+              <Text style={styles.sectionTitle}>Device</Text>
             </View>
-            <DetailRow label="Brand" value={brand} />
-            <DetailRow label="Manufacturer" value={manufacturer} />
-            <DetailRow label="Model Name" value={modelName} />
-            <DetailRow label="Device Name" value={deviceName} />
-            <DetailRow label="Device ID" value={deviceId} />
+            <DetailRow label="Brand" value={deviceBrand} />
+            <DetailRow label="Model" value={deviceModel} />
+            <DetailRow label="Manufacturer" value={deviceManufacturer} />
+            <DetailRow label="Device" value={deviceName} />
+            <DetailRow label="Product" value={deviceProduct} />
+            <DetailRow label="Hardware" value={deviceHardware} />
+            <DetailRow label="Board" value={deviceBoard} />
           </View>
 
           <View style={styles.sectionCard}>
@@ -114,29 +177,108 @@ export const SystemCards = ({
                 size={14}
                 color={colors.icon.orange}
               />
-              <Text style={styles.sectionTitle}>Platform details</Text>
+              <Text style={styles.sectionTitle}>Software</Text>
             </View>
-            <DetailRow label="OS Name" value={osName} />
-            <DetailRow label="OS Version" value={osVersion} />
-            <DetailRow label="OS Build ID" value={osBuildId} />
-            <DetailRow label="Physical Device" value={isDevice} />
-            <DetailRow label="Rooted" value={isRooted} />
+            <DetailRow label="Android Version" value={androidVersion} />
+            <DetailRow label="API Level" value={apiLevel} />
+            <DetailRow label="Codename" value={codename} />
+            <DetailRow label="Build ID" value={buildId} />
+            <DetailRow label="Build Display" value={buildDisplay} />
+            <DetailRow label="Incremental Version" value={incrementalVersion} />
+            <DetailRow label="System UI Version" value={systemUiVersion} />
           </View>
 
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeader}>
               <Ionicons
-                name="settings-outline"
+                name="scan-outline"
                 size={14}
                 color={colors.icon.blue}
               />
-              <Text style={styles.sectionTitle}>Hardware details</Text>
+              <Text style={styles.sectionTitle}>Display</Text>
+            </View>
+            <DetailRow label="Resolution" value={resolution} />
+            <DetailRow label="Density DPI" value={densityDpi} />
+            <DetailRow label="Physical Size / Diagonal" value={physicalSize} />
+            <DetailRow label="Refresh Rate" value={refreshRate} />
+            <DetailRow label="Orientation" value={rotationOrientation} />
+            <DetailRow label="Display Cutout" value={displayCutout} />
+          </View>
+
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeader}>
+              <Ionicons
+                name="speedometer-outline"
+                size={14}
+                color={colors.icon.yellow}
+              />
+              <Text style={styles.sectionTitle}>Performance</Text>
+            </View>
+            <DetailRow label="Total RAM" value={totalRam} />
+            <DetailRow label="Available RAM" value={availableRam} />
+            <DetailRow label="Memory Class" value={memoryClass} />
+            <DetailRow label="Large Memory Class" value={largeMemoryClass} />
+            <DetailRow label="CPU ABI List" value={cpuAbiList} />
+            <DetailRow label="Number of Cores" value={numberOfCores} />
+          </View>
+
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeader}>
+              <Ionicons
+                name="server-outline"
+                size={14}
+                color={colors.icon.green}
+              />
+              <Text style={styles.sectionTitle}>Storage</Text>
             </View>
             <DetailRow
-              label="CPU Architectures"
-              value={supportedCpuArchitectures}
+              label="Total Internal Storage"
+              value={totalInternalStorage}
             />
-            <DetailRow label="Total Memory" value={totalMemory} />
+            <DetailRow label="Free Space" value={freeSpace} />
+            <DetailRow label="Used %" value={usedPercent} />
+            <DetailRow label="SD Card Capacity" value={sdCardCapacity} />
+          </View>
+
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeader}>
+              <Ionicons
+                name="shield-checkmark-outline"
+                size={14}
+                color={colors.icon.orange}
+              />
+              <Text style={styles.sectionTitle}>Security</Text>
+            </View>
+            <DetailRow
+              label="Device Secure Lock Status"
+              value={deviceSecureLockStatus}
+            />
+            <DetailRow
+              label="Fingerprint Sensor Presence"
+              value={fingerprintSensorPresence}
+            />
+            <DetailRow label="Emulator Detection" value={emulatorDetection} />
+            <DetailRow label="Root Detection" value={rootDetection} />
+            <DetailRow label="Bootloader Status" value={bootloaderStatus} />
+            <DetailRow
+              label="Secure Settings Availability"
+              value={secureSettingsAvailability}
+            />
+          </View>
+
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeader}>
+              <Ionicons
+                name="time-outline"
+                size={14}
+                color={colors.icon.blue}
+              />
+              <Text style={styles.sectionTitle}>Region & Time</Text>
+            </View>
+            <DetailRow label="Locale / Language" value={localeLanguage} />
+            <DetailRow label="Region" value={region} />
+            <DetailRow label="Timezone ID" value={timezoneId} />
+            <DetailRow label="Clock Format" value={clockFormat} />
           </View>
         </ScrollView>
       </View>
@@ -155,7 +297,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderColor: colors.border,
-    maxHeight: 640,
+    maxHeight: 735,
   },
   panelContent: {
     paddingBottom: 5,
@@ -185,6 +327,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  sectionCard: {
+    marginTop: 10,
+    backgroundColor: colors.card.elevated,
+    borderRadius: 14,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: 8,
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: colors.text.secondary,
+  },
   quickStatsRow: {
     marginTop: 13,
     flexDirection: "row",
@@ -213,30 +374,11 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: colors.text.primary,
   },
-  sectionCard: {
-    marginTop: 10,
-    backgroundColor: colors.card.elevated,
-    borderRadius: 14,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  sectionHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    marginBottom: 8,
-  },
-  sectionTitle: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: colors.text.secondary,
-  },
   detailRow: {
-    paddingVertical: 4,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    paddingVertical: 4,
   },
   detailLabel: {
     fontSize: 12,
