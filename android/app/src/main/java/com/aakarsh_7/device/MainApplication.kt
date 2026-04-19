@@ -28,6 +28,7 @@ class MainApplication : Application(), ReactApplication {
               add(BatteryInfoPackage())
               add(WifiInfoPackage())
               add(SystemInfoPackage())
+              add(SensorInfoPackage())
             }
 
           override fun getJSMainModuleName(): String = ".expo/.virtual-metro-entry"
