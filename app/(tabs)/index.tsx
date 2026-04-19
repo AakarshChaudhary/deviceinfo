@@ -5,7 +5,7 @@ import { BatteryRing } from "../../components/battery/BatteryRing";
 import { useBatteryStatus } from "../../components/battery/useBatteryStatus";
 import { NetworkQuickVisual } from "../../components/network/NetworkQuickVisual";
 import { useNetworkStatus } from "../../components/network/useNetworkStatus";
-import {colors} from "../../components/theme/color";
+import { colors } from "../../components/theme/color";
 
 const Page = () => {
   const batteryStatus = useBatteryStatus();
@@ -45,9 +45,11 @@ const Page = () => {
                   networkStatus.quickVisual.internetReachability
                 }
                 wifiSignalQuality={networkStatus.quickVisual.wifiSignalQuality}
-                cellularSignalStrength={
-                  networkStatus.quickVisual.cellularSignalStrength
+                cellularSignalQuality={
+                  networkStatus.quickVisual.cellularSignalQuality
                 }
+                wifiSize={90}
+                barSize={90}
               />
             </View>
           </View>

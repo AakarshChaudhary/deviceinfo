@@ -112,6 +112,7 @@ export const NetworkCards = ({ cards, refresh }: NetworkCardsProps) => {
               label="Signal Strength"
               value={cellular.signalStrength}
             />
+            <DetailRow label="Signal Quality" value={cellular.signalQuality} />
             <DetailRow label="Roaming" value={cellular.roaming} />
             <DetailRow label="Data State" value={cellular.dataState} />
           </View>
@@ -149,7 +150,7 @@ export const NetworkCards = ({ cards, refresh }: NetworkCardsProps) => {
 const styles = StyleSheet.create({
   cardsSection: {
     width: "90%",
-    marginTop: 25,
+    marginTop: 20,
   },
   panel: {
     backgroundColor: colors.card.base,
@@ -157,7 +158,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderColor: colors.border,
-    maxHeight: 735,
+    maxHeight: 495,
   },
   panelContent: {
     paddingBottom: 5,

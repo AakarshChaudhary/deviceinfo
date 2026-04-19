@@ -8,7 +8,9 @@ type NetworkQuickVisualProps = {
   statusLabel: string;
   internetReachability: string;
   wifiSignalQuality: string;
-  cellularSignalStrength: string;
+  cellularSignalQuality: string;
+  wifiSize?: number;
+  barSize?: number;
 };
 
 const getWifiStrengthLevel = (quality: string) => {
@@ -21,7 +23,7 @@ const getWifiStrengthLevel = (quality: string) => {
 };
 
 const getCellularStrengthLevel = (
-  signalStrength: string,
+  quality: string,
   internetReachability: string,
   statusLabel: string,
 ) => {
@@ -29,14 +31,11 @@ const getCellularStrengthLevel = (
     return 0;
   }
 
-  const match = signalStrength.match(/-?\d+/);
-  if (match) {
-    const dbm = Number(match[0]);
-    if (dbm >= -75) return 4;
-    if (dbm >= -90) return 3;
-    if (dbm >= -105) return 2;
-    return 1;
-  }
+  const normalized = quality.trim().toLowerCase();
+  if (normalized === "excellent") return 4;
+  if (normalized === "good") return 3;
+  if (normalized === "fair") return 2;
+  if (normalized === "weak") return 1;
 
   return internetReachability === "Yes" ? 3 : 1;
 };
@@ -51,15 +50,21 @@ const getStrengthColor = (level: number) => {
 
 const INACTIVE_COLOR = "#cbd5e1";
 
-const WifiArcStrengthIcon = ({ level }: { level: number }) => {
+const WifiArcStrengthIcon = ({
+  level,
+  size,
+}: {
+  level: number;
+  size: number;
+}) => {
   const activeColor = getStrengthColor(level);
-  const arc1Color = level >= 2 ? activeColor : INACTIVE_COLOR;
+  const arc1Color = level >= 4 ? activeColor : INACTIVE_COLOR;
   const arc2Color = level >= 3 ? activeColor : INACTIVE_COLOR;
-  const arc3Color = level >= 4 ? activeColor : INACTIVE_COLOR;
+  const arc3Color = level >= 2 ? activeColor : INACTIVE_COLOR;
   const dotColor = level >= 1 ? activeColor : INACTIVE_COLOR;
 
   return (
-    <Svg width={100} height={100} viewBox="0 0 24 24" fill="none">
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
         d="M3.22363 8.81635C4.34165 7.61742 5.69347 6.66028 7.19569 6.00398C8.69791 5.34768 10.3179 5.0058 11.9572 5.00007C13.5966 4.99435 15.2208 5.32472 16.7276 5.97052C18.2344 6.61632 19.5931 7.56458 20.7195 8.75568"
         stroke={arc1Color}
@@ -86,13 +91,19 @@ const WifiArcStrengthIcon = ({ level }: { level: number }) => {
   );
 };
 
-const CellularSignalBars = ({ level }: { level: number }) => {
+const CellularSignalBars = ({
+  level,
+  size,
+}: {
+  level: number;
+  size: number;
+}) => {
   const activeColor = getStrengthColor(level);
   const barHeights = [14, 22, 30, 38, 46];
   const filledBars = level === 0 ? 0 : Math.min(5, level + 1);
 
   return (
-    <Svg width={86} height={64} viewBox="0 0 86 64" fill="none">
+    <Svg width={size} height={size} viewBox="0 0 86 64" fill="none">
       {barHeights.map((height, index) => {
         const barIndex = index + 1;
         return (
@@ -116,7 +127,9 @@ export const NetworkQuickVisual = ({
   statusLabel,
   internetReachability,
   wifiSignalQuality,
-  cellularSignalStrength,
+  cellularSignalQuality,
+  wifiSize = 100,
+  barSize = 86,
 }: NetworkQuickVisualProps) => {
   const normalizedType = networkType.trim().toLowerCase();
   const isWifi = normalizedType.includes("wifi");
@@ -124,7 +137,7 @@ export const NetworkQuickVisual = ({
   const strengthLevel = isWifi
     ? getWifiStrengthLevel(wifiSignalQuality)
     : getCellularStrengthLevel(
-        cellularSignalStrength,
+        cellularSignalQuality,
         internetReachability,
         statusLabel,
       );
@@ -132,14 +145,14 @@ export const NetworkQuickVisual = ({
   return (
     <View style={styles.container}>
       {isWifi ? (
-        <WifiArcStrengthIcon level={strengthLevel} />
+        <WifiArcStrengthIcon level={strengthLevel} size={wifiSize} />
       ) : (
-        <CellularSignalBars level={strengthLevel} />
+        <CellularSignalBars level={strengthLevel} size={barSize} />
       )}
 
       <Text style={styles.primaryText}>{networkType}</Text>
       <Text style={styles.secondaryText}>
-        {isWifi ? wifiSignalQuality : `${strengthLevel}/4 bars`}
+        {isWifi ? wifiSignalQuality : cellularSignalQuality}
       </Text>
     </View>
   );
@@ -153,13 +166,13 @@ const styles = StyleSheet.create({
   },
   primaryText: {
     marginTop: 5,
-    fontSize: 14,
+    fontSize: 25,
     fontWeight: "700",
     color: colors.text.primary,
   },
   secondaryText: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: 13,
+    fontWeight: "700",
     color: colors.text.secondary,
   },
 });

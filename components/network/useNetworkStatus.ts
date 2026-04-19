@@ -39,7 +39,7 @@ export type NetworkQuickVisualModel = {
   statusLabel: string;
   internetReachability: string;
   wifiSignalQuality: string;
-  cellularSignalStrength: string;
+  cellularSignalQuality: string;
 };
 
 export type NetworkCardsModel = {
@@ -57,6 +57,7 @@ export type NetworkCardsModel = {
     generation: string;
     networkType: string;
     signalStrength: string;
+    signalQuality: string;
     roaming: string;
     dataState: string;
   };
@@ -143,6 +144,25 @@ const getSignalStrengthLabel = (value?: number | null) => {
   }
 
   return "Weak";
+};
+
+const getCellularSignalQuality = (value?: string | null) => {
+  if (!value) {
+    return "Unknown";
+  }
+
+  const normalized = value.toLowerCase();
+  if (!normalized.includes("dbm") && !normalized.includes("-")) {
+    return "Unknown";
+  }
+
+  const match = normalized.match(/-?\d+/);
+  if (!match) {
+    return "Unknown";
+  }
+
+  const parsed = Number(match[0]);
+  return Number.isNaN(parsed) ? "Unknown" : getSignalStrengthLabel(parsed);
 };
 
 const formatLinkSpeed = (value?: number | null) => {
@@ -245,6 +265,7 @@ export const useNetworkStatus = () => {
   const [cellularNetworkType, setCellularNetworkType] = useState("Unknown");
   const [cellularSignalStrength, setCellularSignalStrength] =
     useState("Unknown");
+  const [cellularSignalQuality, setCellularSignalQuality] = useState("Unknown");
   const [cellularRoaming, setCellularRoaming] = useState("Unknown");
   const [cellularDataState, setCellularDataState] = useState("Unknown");
   const [refreshing, setRefreshing] = useState(false);
@@ -285,6 +306,9 @@ export const useNetworkStatus = () => {
       setCarrier(toDisplay(wifiDetails.carrier));
       setCellularNetworkType(toDisplay(wifiDetails.cellularNetworkType));
       setCellularSignalStrength(toDisplay(wifiDetails.cellularSignalStrength));
+      setCellularSignalQuality(
+        getCellularSignalQuality(wifiDetails.cellularSignalStrength),
+      );
       setCellularRoaming(toDisplay(wifiDetails.cellularRoaming));
       setCellularDataState(toDisplay(wifiDetails.cellularDataState));
 
@@ -328,7 +352,7 @@ export const useNetworkStatus = () => {
     statusLabel: summary.statusLabel,
     internetReachability,
     wifiSignalQuality,
-    cellularSignalStrength,
+    cellularSignalQuality,
   };
 
   const cards: NetworkCardsModel = {
@@ -346,6 +370,7 @@ export const useNetworkStatus = () => {
       generation: mobileNetwork,
       networkType: cellularNetworkType,
       signalStrength: cellularSignalStrength,
+      signalQuality: cellularSignalQuality,
       roaming: cellularRoaming,
       dataState: cellularDataState,
     },
