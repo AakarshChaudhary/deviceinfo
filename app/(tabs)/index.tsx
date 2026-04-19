@@ -3,9 +3,12 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { BatteryRing } from "../../components/battery/BatteryRing";
 import { useBatteryStatus } from "../../components/battery/useBatteryStatus";
+import { NetworkQuickVisual } from "../../components/network/NetworkQuickVisual";
+import { useNetworkStatus } from "../../components/network/useNetworkStatus";
 
 const Page = () => {
   const batteryStatus = useBatteryStatus();
+  const networkStatus = useNetworkStatus();
 
   const deviceName =
     Device.deviceName ?? Device.designName ?? Device.modelName ?? "Device";
@@ -31,7 +34,18 @@ const Page = () => {
               />
             </View>
           </View>
-          <View style={[styles.card, styles.card2]} />
+          <View style={[styles.card, styles.card2]}>
+            <Text style={styles.cardTitle}>Network</Text>
+            <View style={styles.ringCenter}>
+              <NetworkQuickVisual
+                networkType={networkStatus.networkType}
+                statusLabel={networkStatus.statusLabel}
+                internetReachability={networkStatus.internetReachability}
+                wifiSignalQuality={networkStatus.wifiSignalQuality}
+                cellularSignalStrength={networkStatus.cellularSignalStrength}
+              />
+            </View>
+          </View>
         </View>
         <View style={styles.row}>
           <View style={[styles.card, styles.card3]} />
@@ -77,7 +91,7 @@ const styles = StyleSheet.create({
     padding: 18,
   },
   card1: {
-    flex: 1.5,
+    flex: 1,
     height: 230,
     marginRight: 10,
   },
@@ -96,7 +110,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   card4: {
-    flex: 1.2,
+    flex: 1,
     height: 230,
   },
   cardTitle: {
