@@ -1,11 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import { colors } from "../theme/color";
 import type { SystemCardsModel, SystemRefreshModel } from "./useSystemStatus";
@@ -55,7 +55,7 @@ export const SystemCards = ({ cards, refresh }: SystemCardsProps) => {
           <View style={styles.headerRow}>
             <View>
               <Text style={styles.headerLabel}>SYSTEM DASHBOARD</Text>
-              <Text style={styles.headerTitle}>System Deep Info</Text>
+              <Text style={styles.headerTitle}>System Overview</Text>
             </View>
             <View style={styles.headerIconBadge}>
               <Ionicons
@@ -74,8 +74,10 @@ export const SystemCards = ({ cards, refresh }: SystemCardsProps) => {
               </Text>
             </View>
             <View style={[styles.quickStatCard, styles.quickStatSecondary]}>
-              <Text style={styles.quickStatLabel}>Device</Text>
-              <Text style={styles.quickStatValue}>{summary.device}</Text>
+              <Text style={styles.quickStatLabel}>System UI Version</Text>
+              <Text style={styles.quickStatValue}>
+                {summary.systemUiVersion}
+              </Text>
             </View>
           </View>
 
@@ -106,10 +108,6 @@ export const SystemCards = ({ cards, refresh }: SystemCardsProps) => {
               />
               <Text style={styles.sectionTitle}>Software</Text>
             </View>
-            <DetailRow
-              label="Android Version"
-              value={software.androidVersion}
-            />
             <DetailRow label="API Level" value={software.apiLevel} />
             <DetailRow label="Codename" value={software.codename} />
             <DetailRow label="Build ID" value={software.buildId} />
@@ -117,10 +115,6 @@ export const SystemCards = ({ cards, refresh }: SystemCardsProps) => {
             <DetailRow
               label="Incremental Version"
               value={software.incrementalVersion}
-            />
-            <DetailRow
-              label="System UI Version"
-              value={software.systemUiVersion}
             />
           </View>
 

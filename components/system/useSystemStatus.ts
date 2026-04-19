@@ -36,7 +36,7 @@ type NativeSystemDetails = {
 export type SystemCardsModel = {
   summary: {
     androidVersion: string;
-    device: string;
+    systemUiVersion: string;
   };
   device: {
     brand: string;
@@ -281,7 +281,7 @@ export const useSystemStatus = () => {
   const cards: SystemCardsModel = {
     summary: {
       androidVersion,
-      device: deviceModel,
+      systemUiVersion,
     },
     device: {
       brand: deviceBrand,
