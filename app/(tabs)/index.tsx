@@ -1,9 +1,12 @@
 import * as Device from "expo-device";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { BatteryRing } from "../../components/battery/BatteryRing";
 import { useBatteryStatus } from "../../components/battery/useBatteryStatus";
 
 const Page = () => {
+  const batteryStatus = useBatteryStatus();
+
   const deviceName =
     Device.deviceName ?? Device.designName ?? Device.modelName ?? "Device";
 
@@ -15,8 +18,22 @@ const Page = () => {
           <View style={[styles.card, styles.card1]}>
             <Text style={styles.cardTitle}>Battery</Text>
             <Text style={styles.cardValue}>
-              
+              {batteryStatus.batteryLevelLabel}
             </Text>
+            <Text style={styles.cardState}>
+              {batteryStatus.batteryStatusLabel}
+            </Text>
+            <BatteryRing
+              progress={batteryStatus.batteryLevelProgress}
+              levelLabel={batteryStatus.batteryLevelLabel}
+              statusLabel={batteryStatus.batteryStatusLabel}
+              ringColorKey={batteryStatus.batteryRingColorKey}
+              isCharging={batteryStatus.isCharging}
+              size={100}
+              strokeWidth={5}
+              levelFontSize={18}
+              statusFontSize={10}
+            />
           </View>
           <View style={[styles.card, styles.card2]} />
         </View>
@@ -61,6 +78,7 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 8 },
     elevation: 4,
+    padding: 18,
   },
   card1: {
     flex: 1.5,

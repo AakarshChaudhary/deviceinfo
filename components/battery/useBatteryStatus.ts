@@ -94,6 +94,52 @@ const formatEstimatedTime = (
   return mins === 0 ? `${hrs} h` : `${hrs} h ${mins} m`;
 };
 
+const clampBatteryLevel = (level: number) => Math.max(0, Math.min(1, level));
+
+const formatBatteryLevelLabel = (level: number) =>
+  `${Math.round(clampBatteryLevel(level) * 100)}%`;
+
+const getBatteryStatusLabel = (state: Battery.BatteryState, level: number) => {
+  if (state === Battery.BatteryState.CHARGING) {
+    return "CHARGING";
+  }
+
+  if (state === Battery.BatteryState.FULL) {
+    return "FULL";
+  }
+
+  if (state === Battery.BatteryState.UNPLUGGED) {
+    return "UNPLUGGED";
+  }
+
+  return clampBatteryLevel(level) <= 0.2 ? "LOW" : "UNKNOWN";
+};
+
+const getBatteryRingColorKey = (state: Battery.BatteryState, level: number) => {
+  const progress = clampBatteryLevel(level);
+
+  if (state === Battery.BatteryState.CHARGING) {
+    return "charging";
+  }
+
+  if (progress >= 0.8) {
+    return "high";
+  }
+
+  if (progress >= 0.5) {
+    return "good";
+  }
+
+  if (progress >= 0.2) {
+    return "low";
+  }
+
+  return "critical";
+};
+
+const getBatteryHealthTone = (health: string): "good" | "warning" =>
+  health.trim().toLowerCase() === "good" ? "good" : "warning";
+
 export const useBatteryStatus = () => {
   const [batteryLevel, setBatteryLevel] = useState(0);
   const [batteryState, setBatteryState] = useState<Battery.BatteryState>(
@@ -201,10 +247,27 @@ export const useBatteryStatus = () => {
     };
   }, [load]);
 
+  const batteryLevelProgress = clampBatteryLevel(batteryLevel);
+  const batteryLevelLabel = formatBatteryLevelLabel(batteryLevel);
+  const batteryStatusLabel = getBatteryStatusLabel(batteryState, batteryLevel);
+  const batteryRingColorKey = getBatteryRingColorKey(
+    batteryState,
+    batteryLevel,
+  );
+  const powerSavingStatus = powerSaving ? "Active" : "Inactive";
+  const batteryHealthTone = getBatteryHealthTone(batteryHealth);
+  const isCharging = batteryState === Battery.BatteryState.CHARGING;
+
   return {
     batteryLevel,
+    batteryLevelProgress,
+    batteryLevelLabel,
     batteryState,
+    batteryStatusLabel,
+    batteryRingColorKey,
+    isCharging,
     powerSaving,
+    powerSavingStatus,
     batteryManufacturer,
     batteryTemperature,
     batteryVoltage,
@@ -214,6 +277,7 @@ export const useBatteryStatus = () => {
     estimatedTime,
     chargingType,
     batteryHealth,
+    batteryHealthTone,
     batteryTechnology,
     refreshing,
     onRefresh,

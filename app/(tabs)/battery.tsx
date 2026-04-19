@@ -1,200 +1,27 @@
-import { Ionicons } from "@expo/vector-icons";
-import * as Battery from "expo-battery";
-import React, { useEffect, useMemo, useRef } from "react";
-import { Animated, Easing, StyleSheet, Text, View } from "react-native";
-import Svg, { Circle } from "react-native-svg";
-import { colors } from "../../components/theme/color";
+import React from "react";
+import { StyleSheet, View } from "react-native";
 
 import { BatteryCards } from "../../components/battery/BatteryCards";
+import { BatteryRing } from "../../components/battery/BatteryRing";
 import { useBatteryStatus } from "../../components/battery/useBatteryStatus";
 
-const AnimatedCircle: any = Animated.createAnimatedComponent(Circle);
-
-const SIZE = 250;
-const STROKE_WIDTH = 13;
-
 const Page = () => {
-  const {
-    batteryLevel,
-    batteryState,
-    powerSaving,
-    batteryManufacturer,
-    batteryTemperature,
-    batteryVoltage,
-    batteryCapacity,
-    chargingSpeed,
-    estimatedTimeLabel,
-    estimatedTime,
-    chargingType,
-    batteryHealth,
-    batteryTechnology,
-    refreshing,
-    onRefresh,
-  } = useBatteryStatus();
-  const healthStatus = batteryHealth;
+  const batteryStatus = useBatteryStatus();
 
   return (
     <View style={styles.container}>
       <BatteryRing
-        level={batteryLevel}
-        size={SIZE}
-        strokeWidth={STROKE_WIDTH}
-        status={batteryState}
+        progress={batteryStatus.batteryLevelProgress}
+        levelLabel={batteryStatus.batteryLevelLabel}
+        statusLabel={batteryStatus.batteryStatusLabel}
+        ringColorKey={batteryStatus.batteryRingColorKey}
+        isCharging={batteryStatus.isCharging}
+        size={250}
+        strokeWidth={13}
       />
 
-      <BatteryCards
-        batteryManufacturer={batteryManufacturer}
-        batteryTemperature={batteryTemperature}
-        batteryVoltage={batteryVoltage}
-        batteryCapacity={batteryCapacity}
-        chargingSpeed={chargingSpeed}
-        estimatedTimeLabel={estimatedTimeLabel}
-        estimatedTime={estimatedTime}
-        chargingType={chargingType}
-        batteryTechnology={batteryTechnology}
-        healthStatus={healthStatus}
-        powerSaving={powerSaving}
-        refreshing={refreshing}
-        onRefresh={onRefresh}
-      />
+      <BatteryCards {...batteryStatus} />
     </View>
-  );
-};
-
-type BatteryRingProps = {
-  level: number;
-  size: number;
-  strokeWidth: number;
-  status: Battery.BatteryState;
-};
-
-const BatteryRing = ({
-  level,
-  size,
-  strokeWidth,
-  status,
-}: BatteryRingProps) => {
-  const radius = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const progress = Math.max(0, Math.min(1, level));
-  const strokeDashoffset = circumference * (1 - progress);
-
-  const animatedOffset = useRef(new Animated.Value(strokeDashoffset)).current;
-
-  useEffect(() => {
-    Animated.timing(animatedOffset, {
-      toValue: strokeDashoffset,
-      duration: 220,
-      easing: Easing.linear,
-      useNativeDriver: false,
-    }).start();
-  }, [animatedOffset, strokeDashoffset]);
-
-  // pulse animation for charging state
-  const pulse = useRef(new Animated.Value(1)).current;
-  const pulseAnimRef = useRef<any>(null);
-
-  useEffect(() => {
-    if (status === Battery.BatteryState.CHARGING) {
-      if (!pulseAnimRef.current) {
-        pulseAnimRef.current = Animated.loop(
-          Animated.sequence([
-            Animated.timing(pulse, {
-              toValue: 1.12,
-              duration: 800,
-              useNativeDriver: true,
-            }),
-            Animated.timing(pulse, {
-              toValue: 1,
-              duration: 700,
-              useNativeDriver: true,
-            }),
-          ]),
-        );
-        pulseAnimRef.current.start();
-      }
-    } else {
-      if (pulseAnimRef.current) {
-        pulseAnimRef.current.stop();
-        pulseAnimRef.current = null;
-      }
-      pulse.setValue(1);
-    }
-
-    return () => {
-      if (pulseAnimRef.current) {
-        pulseAnimRef.current.stop();
-        pulseAnimRef.current = null;
-      }
-    };
-  }, [status, pulse]);
-
-  const label = useMemo(() => `${Math.round(progress * 100)}%`, [progress]);
-  const ringColor =
-    status === Battery.BatteryState.CHARGING
-      ? colors.ring.charging
-      : progress >= 0.8
-        ? colors.ring.high
-        : progress >= 0.5
-          ? colors.ring.good
-          : progress >= 0.2
-            ? colors.ring.low
-            : colors.ring.critical;
-
-  const statusText = useMemo(() => {
-    switch (status) {
-      case Battery.BatteryState.CHARGING:
-        return (
-          <Text style={{ color: colors.text.green }}>
-            <Ionicons name="flash" /> CHARGING
-          </Text>
-        );
-      case Battery.BatteryState.FULL:
-        return "FULL";
-      case Battery.BatteryState.UNPLUGGED:
-        return "UNPLUGGED";
-      case progress <= 0.2 && Battery.BatteryState.UNKNOWN:
-        return "LOW";
-      default:
-        return "UNKNOWN";
-    }
-  }, [status, progress]);
-
-  return (
-    <Animated.View
-      style={[
-        styles.ringWrapper,
-        { width: size, height: size, transform: [{ scale: pulse }] },
-      ]}
-    >
-      <Svg width={size} height={size}>
-        <Circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          stroke={colors.ring.stroke}
-          strokeWidth={strokeWidth}
-          fill="none"
-        />
-        <AnimatedCircle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          stroke={ringColor}
-          strokeWidth={strokeWidth}
-          strokeDasharray={`${circumference} ${circumference}`}
-          strokeDashoffset={animatedOffset}
-          strokeLinecap="round"
-          fill="none"
-          transform={`rotate(-90 ${size / 2} ${size / 2})`}
-        />
-      </Svg>
-
-      <View style={styles.centerContent}>
-        <Text style={styles.level}>{label}</Text>
-        <Text style={styles.caption}>{statusText}</Text>
-      </View>
-    </Animated.View>
   );
 };
 
@@ -205,27 +32,5 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: "25%",
     alignItems: "center",
-  },
-  ringWrapper: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  centerContent: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  level: {
-    fontSize: 56,
-    fontWeight: "700",
-    color: colors.text.primary,
-    letterSpacing: 1,
-  },
-  caption: {
-    marginTop: 6,
-    fontSize: 13,
-    fontWeight: "700",
-    color: colors.text.secondary,
-    letterSpacing: 1,
   },
 });

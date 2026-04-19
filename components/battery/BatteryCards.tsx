@@ -19,8 +19,9 @@ type BatteryCardsProps = {
   estimatedTimeLabel: string;
   estimatedTime: string;
   chargingType: string;
-  healthStatus: string;
-  powerSaving: boolean;
+  batteryHealth: string;
+  batteryHealthTone: "good" | "warning";
+  powerSavingStatus: string;
   refreshing: boolean;
   onRefresh: () => void | Promise<void>;
 };
@@ -47,15 +48,14 @@ export const BatteryCards = ({
   estimatedTimeLabel,
   estimatedTime,
   chargingType,
-  healthStatus,
-  powerSaving,
+  batteryHealth,
+  batteryHealthTone,
+  powerSavingStatus,
   refreshing,
   onRefresh,
 }: BatteryCardsProps) => {
   const healthColor =
-    healthStatus.toLowerCase() === "good"
-      ? colors.icon.blue
-      : colors.icon.orange;
+    batteryHealthTone === "good" ? colors.icon.blue : colors.icon.orange;
 
   return (
     <View style={styles.cardsSection}>
@@ -98,10 +98,7 @@ export const BatteryCards = ({
               <Text style={styles.sectionTitle}>Charging</Text>
             </View>
             <DetailRow label="Power Source" value={chargingType} />
-            <DetailRow
-              label="Power Saving"
-              value={powerSaving ? "Active" : "Inactive"}
-            />
+            <DetailRow label="Power Saving" value={powerSavingStatus} />
           </View>
 
           <View style={styles.sectionCard}>
@@ -109,7 +106,7 @@ export const BatteryCards = ({
               <Ionicons name="fitness" size={14} color={healthColor} />
               <Text style={styles.sectionTitle}>Battery Condition</Text>
             </View>
-            <DetailRow label="Health" value={healthStatus} />
+            <DetailRow label="Health" value={batteryHealth} />
             <DetailRow label="Temperature" value={batteryTemperature} />
             <DetailRow label="Voltage" value={batteryVoltage} />
             <DetailRow label="Estimated Capacity" value={batteryCapacity} />
