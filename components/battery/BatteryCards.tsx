@@ -16,6 +16,7 @@ type BatteryCardsProps = {
   batteryVoltage: string;
   batteryCapacity: string;
   chargingSpeed: string;
+  speedLabel: string;
   estimatedTimeLabel: string;
   estimatedTime: string;
   chargingType: string;
@@ -45,6 +46,7 @@ export const BatteryCards = ({
   batteryVoltage,
   batteryCapacity,
   chargingSpeed,
+  speedLabel,
   estimatedTimeLabel,
   estimatedTime,
   chargingType,
@@ -83,7 +85,7 @@ export const BatteryCards = ({
 
           <View style={styles.quickStatsRow}>
             <View style={[styles.quickStatCard, styles.quickStatPrimary]}>
-              <Text style={styles.quickStatLabel}>Charging Speed</Text>
+              <Text style={styles.quickStatLabel}>{speedLabel}</Text>
               <Text style={styles.quickStatValue}>{chargingSpeed}</Text>
             </View>
             <View style={[styles.quickStatCard, styles.quickStatSecondary]}>

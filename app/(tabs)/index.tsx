@@ -17,23 +17,19 @@ const Page = () => {
         <View style={styles.row}>
           <View style={[styles.card, styles.card1]}>
             <Text style={styles.cardTitle}>Battery</Text>
-            <Text style={styles.cardValue}>
-              {batteryStatus.batteryLevelLabel}
-            </Text>
-            <Text style={styles.cardState}>
-              {batteryStatus.batteryStatusLabel}
-            </Text>
-            <BatteryRing
-              progress={batteryStatus.batteryLevelProgress}
-              levelLabel={batteryStatus.batteryLevelLabel}
-              statusLabel={batteryStatus.batteryStatusLabel}
-              ringColorKey={batteryStatus.batteryRingColorKey}
-              isCharging={batteryStatus.isCharging}
-              size={100}
-              strokeWidth={5}
-              levelFontSize={18}
-              statusFontSize={10}
-            />
+            <View style={styles.ringCenter}>
+              <BatteryRing
+                progress={batteryStatus.batteryLevelProgress}
+                levelLabel={batteryStatus.batteryLevelLabel}
+                statusLabel={batteryStatus.batteryStatusLabel}
+                ringColorKey={batteryStatus.batteryRingColorKey}
+                isCharging={batteryStatus.isCharging}
+                size={150}
+                strokeWidth={7}
+                levelFontSize={30}
+                statusFontSize={10}
+              />
+            </View>
           </View>
           <View style={[styles.card, styles.card2]} />
         </View>
@@ -85,6 +81,11 @@ const styles = StyleSheet.create({
     height: 230,
     marginRight: 10,
   },
+  ringCenter: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   card2: {
     flex: 1,
     height: 230,
@@ -103,16 +104,5 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#0f172a",
     marginBottom: 10,
-  },
-  cardValue: {
-    fontSize: 32,
-    fontWeight: "800",
-    color: "#0f172a",
-  },
-  cardState: {
-    marginTop: 8,
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#475569",
   },
 });

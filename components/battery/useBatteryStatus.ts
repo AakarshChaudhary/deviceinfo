@@ -109,7 +109,7 @@ const getBatteryStatusLabel = (state: Battery.BatteryState, level: number) => {
   }
 
   if (state === Battery.BatteryState.UNPLUGGED) {
-    return "UNPLUGGED";
+    return "DISCHARGING";
   }
 
   return clampBatteryLevel(level) <= 0.2 ? "LOW" : "UNKNOWN";
@@ -176,12 +176,6 @@ export const useBatteryStatus = () => {
     setBatteryTemperature(formatTemperature(nativeDetails.temperatureC));
     setBatteryVoltage(formatVoltage(nativeDetails.voltageMv));
     setBatteryCapacity(formatCapacity(nativeDetails.capacityMah));
-    setChargingSpeed(
-      formatChargingSpeed(
-        nativeDetails.chargingCurrentMa,
-        nativeDetails.capacityMah,
-      ),
-    );
 
     const isCharging =
       state === Battery.BatteryState.CHARGING ||
@@ -189,6 +183,10 @@ export const useBatteryStatus = () => {
     const activeCurrentMa = isCharging
       ? nativeDetails.chargingCurrentMa
       : nativeDetails.dischargingCurrentMa;
+
+    setChargingSpeed(
+      formatChargingSpeed(activeCurrentMa, nativeDetails.capacityMah),
+    );
 
     setEstimatedTimeLabel(isCharging ? "Time to Full" : "Time to Discharge");
     setEstimatedTime(
@@ -199,7 +197,7 @@ export const useBatteryStatus = () => {
         isCharging,
       ),
     );
-    setChargingType(nativeDetails.chargingType ?? "Unplugged");
+    setChargingType(nativeDetails.chargingType ?? "Discharging");
     setBatteryHealth(nativeDetails.batteryHealth ?? "Unknown");
     setBatteryTechnology(nativeDetails.batteryTechnology ?? "Unknown");
   }, []);
@@ -257,6 +255,7 @@ export const useBatteryStatus = () => {
   const powerSavingStatus = powerSaving ? "Active" : "Inactive";
   const batteryHealthTone = getBatteryHealthTone(batteryHealth);
   const isCharging = batteryState === Battery.BatteryState.CHARGING;
+  const speedLabel = isCharging ? "Charging Speed" : "Discharging Speed";
 
   return {
     batteryLevel,
@@ -273,6 +272,7 @@ export const useBatteryStatus = () => {
     batteryVoltage,
     batteryCapacity,
     chargingSpeed,
+    speedLabel,
     estimatedTimeLabel,
     estimatedTime,
     chargingType,
