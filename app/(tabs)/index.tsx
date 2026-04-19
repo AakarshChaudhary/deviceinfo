@@ -1,20 +1,100 @@
-import { View, Text, StyleSheet } from 'react-native'
-import React from 'react'
+import * as Device from "expo-device";
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { useBatteryStatus } from "../../components/battery/useBatteryStatus";
 
 const Page = () => {
+  const deviceName =
+    Device.deviceName ?? Device.designName ?? Device.modelName ?? "Device";
+
   return (
     <View style={styles.container}>
-      <Text>Home Screen</Text>
+      <Text style={styles.greeting}>Hi, {deviceName}</Text>
+      <View style={styles.cardcontainer}>
+        <View style={styles.row}>
+          <View style={[styles.card, styles.card1]}>
+            <Text style={styles.cardTitle}>Battery</Text>
+            <Text style={styles.cardValue}>
+              
+            </Text>
+          </View>
+          <View style={[styles.card, styles.card2]} />
+        </View>
+        <View style={styles.row}>
+          <View style={[styles.card, styles.card3]} />
+          <View style={[styles.card, styles.card4]} />
+        </View>
+      </View>
     </View>
-  )
-}
+  );
+};
 
-export default Page
+export default Page;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-})
+    padding: 15,
+    marginTop: 50,
+  },
+  cardcontainer: {
+    flex: 1,
+    marginTop: "20%",
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  greeting: {
+    alignSelf: "flex-start",
+    marginBottom: 16,
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#0f172a",
+  },
+  card: {
+    backgroundColor: "#ffffff",
+    borderRadius: 24,
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 4,
+  },
+  card1: {
+    flex: 1.5,
+    height: 230,
+    marginRight: 10,
+  },
+  card2: {
+    flex: 1,
+    height: 230,
+  },
+  card3: {
+    flex: 1,
+    height: 230,
+    marginRight: 10,
+  },
+  card4: {
+    flex: 1.2,
+    height: 230,
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#0f172a",
+    marginBottom: 10,
+  },
+  cardValue: {
+    fontSize: 32,
+    fontWeight: "800",
+    color: "#0f172a",
+  },
+  cardState: {
+    marginTop: 8,
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#475569",
+  },
+});

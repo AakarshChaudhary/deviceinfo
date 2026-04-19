@@ -151,7 +151,9 @@ export const useSystemStatus = () => {
     setDeviceBrand(formatName(Device.brand));
     setDeviceModel(toDisplay(Device.modelName));
     setDeviceManufacturer(formatName(Device.manufacturer));
-    setDeviceName(toDisplay(Device.designName));
+    setDeviceName(
+      toDisplay(Device.deviceName ?? Device.designName ?? Device.modelName),
+    );
     setDeviceProduct(toDisplay(Device.productName));
     setDeviceHardware(toDisplay(nativeDetails.hardware));
     setDeviceBoard(toDisplay(nativeDetails.board));
