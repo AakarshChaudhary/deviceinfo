@@ -5,6 +5,7 @@ import { BatteryRing } from "../../components/battery/BatteryRing";
 import { useBatteryStatus } from "../../components/battery/useBatteryStatus";
 import { NetworkQuickVisual } from "../../components/network/NetworkQuickVisual";
 import { useNetworkStatus } from "../../components/network/useNetworkStatus";
+import {colors} from "../../components/theme/color";
 
 const Page = () => {
   const batteryStatus = useBatteryStatus();
@@ -22,11 +23,11 @@ const Page = () => {
             <Text style={styles.cardTitle}>Battery</Text>
             <View style={styles.ringCenter}>
               <BatteryRing
-                progress={batteryStatus.batteryLevelProgress}
-                levelLabel={batteryStatus.batteryLevelLabel}
-                statusLabel={batteryStatus.batteryStatusLabel}
-                ringColorKey={batteryStatus.batteryRingColorKey}
-                isCharging={batteryStatus.isCharging}
+                progress={batteryStatus.ring.progress}
+                levelLabel={batteryStatus.ring.levelLabel}
+                statusLabel={batteryStatus.ring.statusLabel}
+                ringColorKey={batteryStatus.ring.ringColorKey}
+                isCharging={batteryStatus.ring.isCharging}
                 size={150}
                 strokeWidth={7}
                 levelFontSize={30}
@@ -38,11 +39,15 @@ const Page = () => {
             <Text style={styles.cardTitle}>Network</Text>
             <View style={styles.ringCenter}>
               <NetworkQuickVisual
-                networkType={networkStatus.networkType}
-                statusLabel={networkStatus.statusLabel}
-                internetReachability={networkStatus.internetReachability}
-                wifiSignalQuality={networkStatus.wifiSignalQuality}
-                cellularSignalStrength={networkStatus.cellularSignalStrength}
+                networkType={networkStatus.quickVisual.networkType}
+                statusLabel={networkStatus.quickVisual.statusLabel}
+                internetReachability={
+                  networkStatus.quickVisual.internetReachability
+                }
+                wifiSignalQuality={networkStatus.quickVisual.wifiSignalQuality}
+                cellularSignalStrength={
+                  networkStatus.quickVisual.cellularSignalStrength
+                }
               />
             </View>
           </View>
@@ -78,12 +83,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     fontSize: 20,
     fontWeight: "700",
-    color: "#0f172a",
+    color: colors.text.primary,
   },
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: colors.background,
     borderRadius: 24,
-    shadowColor: "#000",
+    shadowColor: colors.shadow,
     shadowOpacity: 0.08,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 8 },
@@ -116,7 +121,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#0f172a",
+    color: colors.text.primary,
     marginBottom: 10,
   },
 });

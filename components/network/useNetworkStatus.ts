@@ -29,6 +29,61 @@ type NativeWifiDetails = {
   cellularDataState?: string | null;
 };
 
+export type NetworkSummaryModel = {
+  statusLabel: string;
+  networkType: string;
+};
+
+export type NetworkQuickVisualModel = {
+  networkType: string;
+  statusLabel: string;
+  internetReachability: string;
+  wifiSignalQuality: string;
+  cellularSignalStrength: string;
+};
+
+export type NetworkCardsModel = {
+  summary: NetworkSummaryModel;
+  connection: {
+    internetReachability: string;
+    ipAddress: string;
+    subnetMask: string;
+    interfaceName: string;
+    meteredNetwork: string;
+    airplaneMode: string;
+  };
+  cellular: {
+    carrier: string;
+    generation: string;
+    networkType: string;
+    signalStrength: string;
+    roaming: string;
+    dataState: string;
+  };
+  wifi: {
+    ssid: string;
+    security: string;
+    bssid: string;
+    signalStrength: string;
+    signalQuality: string;
+    band: string;
+    frequency: string;
+    channel: string;
+    standard: string;
+    linkSpeed: string;
+    gateway: string;
+    dns1: string;
+    dns2: string;
+    leaseDuration: string;
+  };
+  errorText: string | null;
+};
+
+export type NetworkRefreshModel = {
+  refreshing: boolean;
+  onRefresh: () => Promise<void>;
+};
+
 const wifiInfoModule = NativeModules.WifiInfoModule as {
   getWifiDetails?: () => Promise<NativeWifiDetails>;
 };
@@ -256,8 +311,11 @@ export const useNetworkStatus = () => {
     fetchNetworkInfo();
   }, [fetchNetworkInfo]);
 
-  const statusLabel = liveState.isConnected === true ? "Connected" : "Offline";
-  const networkType = toDisplay(liveState.type);
+  const summary: NetworkSummaryModel = {
+    statusLabel: liveState.isConnected === true ? "Connected" : "Offline",
+    networkType: toDisplay(liveState.type),
+  };
+
   const internetReachability = toDisplay(liveState.isInternetReachable);
   const mobileNetwork =
     liveState.type === Network.NetworkStateType.CELLULAR
@@ -265,37 +323,59 @@ export const useNetworkStatus = () => {
       : "N/A";
   const meteredNetwork = toDisplay(details.isConnectionExpensive);
 
-  return {
-    statusLabel,
-    networkType,
-    ipAddress,
-    airplaneMode,
+  const quickVisual: NetworkQuickVisualModel = {
+    networkType: summary.networkType,
+    statusLabel: summary.statusLabel,
     internetReachability,
-    mobileNetwork,
-    meteredNetwork,
-    carrier,
-    cellularNetworkType,
-    cellularSignalStrength,
-    cellularRoaming,
-    cellularDataState,
-    wifiSsid,
-    wifiBssid,
-    wifiRssi,
     wifiSignalQuality,
-    wifiLinkSpeed,
-    wifiFrequency,
-    wifiBand,
-    wifiChannel,
-    wifiGateway,
-    networkSubnetMask,
-    networkInterfaceName,
-    wifiDns1,
-    wifiDns2,
-    wifiLeaseDuration,
-    wifiStandard,
-    wifiSecurity,
-    refreshing,
+    cellularSignalStrength,
+  };
+
+  const cards: NetworkCardsModel = {
+    summary,
+    connection: {
+      internetReachability,
+      ipAddress,
+      subnetMask: networkSubnetMask,
+      interfaceName: networkInterfaceName,
+      meteredNetwork,
+      airplaneMode,
+    },
+    cellular: {
+      carrier,
+      generation: mobileNetwork,
+      networkType: cellularNetworkType,
+      signalStrength: cellularSignalStrength,
+      roaming: cellularRoaming,
+      dataState: cellularDataState,
+    },
+    wifi: {
+      ssid: wifiSsid,
+      security: wifiSecurity,
+      bssid: wifiBssid,
+      signalStrength: wifiRssi,
+      signalQuality: wifiSignalQuality,
+      band: wifiBand,
+      frequency: wifiFrequency,
+      channel: wifiChannel,
+      standard: wifiStandard,
+      linkSpeed: wifiLinkSpeed,
+      gateway: wifiGateway,
+      dns1: wifiDns1,
+      dns2: wifiDns2,
+      leaseDuration: wifiLeaseDuration,
+    },
     errorText,
+  };
+
+  const refresh: NetworkRefreshModel = {
+    refreshing,
     onRefresh,
+  };
+
+  return {
+    quickVisual,
+    cards,
+    refresh,
   };
 };

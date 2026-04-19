@@ -8,7 +8,7 @@ const Page = () => {
 
   return (
     <View style={styles.container}>
-      <SystemCards {...systemStatus} />
+      <SystemCards cards={systemStatus.cards} refresh={systemStatus.refresh} />
     </View>
   );
 };

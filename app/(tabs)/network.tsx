@@ -8,7 +8,10 @@ const Page = () => {
 
   return (
     <View style={styles.container}>
-      <NetworkCards {...networkStatus} />
+      <NetworkCards
+        cards={networkStatus.cards}
+        refresh={networkStatus.refresh}
+      />
     </View>
   );
 };

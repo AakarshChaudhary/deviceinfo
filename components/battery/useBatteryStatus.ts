@@ -14,6 +14,43 @@ type NativeBatteryDetails = {
   batteryTechnology?: string | null;
 };
 
+export type BatteryRingModel = {
+  progress: number;
+  levelLabel: string;
+  statusLabel: string;
+  ringColorKey: "charging" | "high" | "good" | "low" | "critical";
+  isCharging: boolean;
+};
+
+export type BatteryCardsModel = {
+  overview: {
+    speedLabel: string;
+    chargingSpeed: string;
+    estimatedTimeLabel: string;
+    estimatedTime: string;
+  };
+  charging: {
+    powerSource: string;
+    powerSavingStatus: string;
+  };
+  condition: {
+    health: string;
+    healthTone: "good" | "warning";
+    temperature: string;
+    voltage: string;
+    estimatedCapacity: string;
+  };
+  details: {
+    manufacturer: string;
+    technology: string;
+  };
+};
+
+export type BatteryRefreshModel = {
+  refreshing: boolean;
+  onRefresh: () => Promise<void>;
+};
+
 const batteryInfoModule = NativeModules.BatteryInfoModule as {
   getBatteryDetails?: () => Promise<NativeBatteryDetails>;
 };
@@ -115,7 +152,10 @@ const getBatteryStatusLabel = (state: Battery.BatteryState, level: number) => {
   return clampBatteryLevel(level) <= 0.2 ? "LOW" : "UNKNOWN";
 };
 
-const getBatteryRingColorKey = (state: Battery.BatteryState, level: number) => {
+const getBatteryRingColorKey = (
+  state: Battery.BatteryState,
+  level: number,
+): BatteryRingModel["ringColorKey"] => {
   const progress = clampBatteryLevel(level);
 
   if (state === Battery.BatteryState.CHARGING) {
@@ -257,29 +297,46 @@ export const useBatteryStatus = () => {
   const isCharging = batteryState === Battery.BatteryState.CHARGING;
   const speedLabel = isCharging ? "Charging Speed" : "Discharging Speed";
 
-  return {
-    batteryLevel,
-    batteryLevelProgress,
-    batteryLevelLabel,
-    batteryState,
-    batteryStatusLabel,
-    batteryRingColorKey,
+  const ring: BatteryRingModel = {
+    progress: batteryLevelProgress,
+    levelLabel: batteryLevelLabel,
+    statusLabel: batteryStatusLabel,
+    ringColorKey: batteryRingColorKey,
     isCharging,
-    powerSaving,
-    powerSavingStatus,
-    batteryManufacturer,
-    batteryTemperature,
-    batteryVoltage,
-    batteryCapacity,
-    chargingSpeed,
-    speedLabel,
-    estimatedTimeLabel,
-    estimatedTime,
-    chargingType,
-    batteryHealth,
-    batteryHealthTone,
-    batteryTechnology,
+  };
+
+  const cards: BatteryCardsModel = {
+    overview: {
+      speedLabel,
+      chargingSpeed,
+      estimatedTimeLabel,
+      estimatedTime,
+    },
+    charging: {
+      powerSource: chargingType,
+      powerSavingStatus,
+    },
+    condition: {
+      health: batteryHealth,
+      healthTone: batteryHealthTone,
+      temperature: batteryTemperature,
+      voltage: batteryVoltage,
+      estimatedCapacity: batteryCapacity,
+    },
+    details: {
+      manufacturer: batteryManufacturer,
+      technology: batteryTechnology,
+    },
+  };
+
+  const refresh: BatteryRefreshModel = {
     refreshing,
     onRefresh,
+  };
+
+  return {
+    ring,
+    cards,
+    refresh,
   };
 };

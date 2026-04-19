@@ -1,49 +1,21 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import { colors } from "../theme/color";
+import type {
+  SensorsCardsModel,
+  SensorsRefreshModel,
+} from "./useSensorsStatus";
 
 type SensorsCardsProps = {
-  statusLabel: string;
-  availableSensors: string;
-  samplingRate: string;
-
-  accelerometerAvailability: string;
-  motionState: string;
-  deviceTilt: string;
-  accelerometerMagnitude: string;
-
-  gyroscopeAvailability: string;
-  rotationSpeed: string;
-  stabilityState: string;
-
-  magnetometerAvailability: string;
-  compassHeading: string;
-  compassDirection: string;
-  magneticFieldStrength: string;
-
-  barometerAvailability: string;
-  barometricPressure: string;
-  estimatedAltitude: string;
-  pressureLevel: string;
-
-  proximitySensor: string;
-  ambientLightSensor: string;
-  stepCounterSensor: string;
-  rotationVectorSensor: string;
-  gravitySensor: string;
-  linearAccelerationSensor: string;
-  relativeHumiditySensor: string;
-  ambientTemperatureSensor: string;
-
-  refreshing: boolean;
-  onRefresh: () => void | Promise<void>;
+  cards: SensorsCardsModel;
+  refresh: SensorsRefreshModel;
 };
 
 type DetailRowProps = {
@@ -58,36 +30,16 @@ const DetailRow = ({ label, value }: DetailRowProps) => (
   </View>
 );
 
-export const SensorsCards = ({
-  statusLabel,
-  availableSensors,
-  samplingRate,
-  accelerometerAvailability,
-  motionState,
-  deviceTilt,
-  accelerometerMagnitude,
-  gyroscopeAvailability,
-  rotationSpeed,
-  stabilityState,
-  magnetometerAvailability,
-  compassHeading,
-  compassDirection,
-  magneticFieldStrength,
-  barometerAvailability,
-  barometricPressure,
-  estimatedAltitude,
-  pressureLevel,
-  proximitySensor,
-  ambientLightSensor,
-  stepCounterSensor,
-  rotationVectorSensor,
-  gravitySensor,
-  linearAccelerationSensor,
-  relativeHumiditySensor,
-  ambientTemperatureSensor,
-  refreshing,
-  onRefresh,
-}: SensorsCardsProps) => {
+export const SensorsCards = ({ cards, refresh }: SensorsCardsProps) => {
+  const {
+    summary,
+    accelerometer,
+    gyroscope,
+    magnetometer,
+    barometer,
+    nativeSensors,
+  } = cards;
+
   return (
     <View style={styles.cardsSection}>
       <View style={styles.panel}>
@@ -95,7 +47,10 @@ export const SensorsCards = ({
           contentContainerStyle={styles.panelContent}
           showsVerticalScrollIndicator
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            <RefreshControl
+              refreshing={refresh.refreshing}
+              onRefresh={refresh.onRefresh}
+            />
           }
         >
           <View style={styles.headerRow}>
@@ -111,11 +66,13 @@ export const SensorsCards = ({
           <View style={styles.quickStatsRow}>
             <View style={[styles.quickStatCard, styles.quickStatPrimary]}>
               <Text style={styles.quickStatLabel}>Status</Text>
-              <Text style={styles.quickStatValue}>{statusLabel}</Text>
+              <Text style={styles.quickStatValue}>{summary.statusLabel}</Text>
             </View>
             <View style={[styles.quickStatCard, styles.quickStatSecondary]}>
               <Text style={styles.quickStatLabel}>Available Sensors</Text>
-              <Text style={styles.quickStatValue}>{availableSensors}</Text>
+              <Text style={styles.quickStatValue}>
+                {summary.availableSensors}
+              </Text>
             </View>
           </View>
 
@@ -128,13 +85,16 @@ export const SensorsCards = ({
               />
               <Text style={styles.sectionTitle}>Accelerometer</Text>
             </View>
-            <DetailRow label="Availability" value={accelerometerAvailability} />
-            <DetailRow label="Motion State" value={motionState} />
+            <DetailRow
+              label="Availability"
+              value={accelerometer.availability}
+            />
+            <DetailRow label="Motion State" value={accelerometer.motionState} />
             <DetailRow
               label="Net Acceleration"
-              value={accelerometerMagnitude}
+              value={accelerometer.netAcceleration}
             />
-            <DetailRow label="Device Tilt" value={deviceTilt} />
+            <DetailRow label="Device Tilt" value={accelerometer.deviceTilt} />
           </View>
 
           <View style={styles.sectionCard}>
@@ -146,9 +106,9 @@ export const SensorsCards = ({
               />
               <Text style={styles.sectionTitle}>Gyroscope</Text>
             </View>
-            <DetailRow label="Availability" value={gyroscopeAvailability} />
-            <DetailRow label="Rotation Speed" value={rotationSpeed} />
-            <DetailRow label="Stability" value={stabilityState} />
+            <DetailRow label="Availability" value={gyroscope.availability} />
+            <DetailRow label="Rotation Speed" value={gyroscope.rotationSpeed} />
+            <DetailRow label="Stability" value={gyroscope.stability} />
           </View>
 
           <View style={styles.sectionCard}>
@@ -160,10 +120,13 @@ export const SensorsCards = ({
               />
               <Text style={styles.sectionTitle}>Magnetometer</Text>
             </View>
-            <DetailRow label="Availability" value={magnetometerAvailability} />
-            <DetailRow label="Heading" value={compassHeading} />
-            <DetailRow label="Direction" value={compassDirection} />
-            <DetailRow label="Field Strength" value={magneticFieldStrength} />
+            <DetailRow label="Availability" value={magnetometer.availability} />
+            <DetailRow label="Heading" value={magnetometer.heading} />
+            <DetailRow label="Direction" value={magnetometer.direction} />
+            <DetailRow
+              label="Field Strength"
+              value={magnetometer.fieldStrength}
+            />
           </View>
 
           <View style={styles.sectionCard}>
@@ -175,11 +138,14 @@ export const SensorsCards = ({
               />
               <Text style={styles.sectionTitle}>Barometer</Text>
             </View>
-            <DetailRow label="Availability" value={barometerAvailability} />
-            <DetailRow label="Pressure" value={barometricPressure} />
-            <DetailRow label="Estimated Altitude" value={estimatedAltitude} />
-            <DetailRow label="Pressure Level" value={pressureLevel} />
-            <DetailRow label="Sampling Rate" value={samplingRate} />
+            <DetailRow label="Availability" value={barometer.availability} />
+            <DetailRow label="Pressure" value={barometer.pressure} />
+            <DetailRow
+              label="Estimated Altitude"
+              value={barometer.estimatedAltitude}
+            />
+            <DetailRow label="Pressure Level" value={barometer.pressureLevel} />
+            <DetailRow label="Sampling Rate" value={barometer.samplingRate} />
           </View>
 
           <View style={styles.sectionCard}>
@@ -191,22 +157,28 @@ export const SensorsCards = ({
               />
               <Text style={styles.sectionTitle}>Additional Native Sensors</Text>
             </View>
-            <DetailRow label="Proximity" value={proximitySensor} />
-            <DetailRow label="Ambient Light" value={ambientLightSensor} />
-            <DetailRow label="Step Counter" value={stepCounterSensor} />
-            <DetailRow label="Rotation Vector" value={rotationVectorSensor} />
-            <DetailRow label="Gravity" value={gravitySensor} />
+            <DetailRow label="Proximity" value={nativeSensors.proximity} />
+            <DetailRow
+              label="Ambient Light"
+              value={nativeSensors.ambientLight}
+            />
+            <DetailRow label="Step Counter" value={nativeSensors.stepCounter} />
+            <DetailRow
+              label="Rotation Vector"
+              value={nativeSensors.rotationVector}
+            />
+            <DetailRow label="Gravity" value={nativeSensors.gravity} />
             <DetailRow
               label="Linear Acceleration"
-              value={linearAccelerationSensor}
+              value={nativeSensors.linearAcceleration}
             />
             <DetailRow
               label="Relative Humidity"
-              value={relativeHumiditySensor}
+              value={nativeSensors.relativeHumidity}
             />
             <DetailRow
               label="Ambient Temperature"
-              value={ambientTemperatureSensor}
+              value={nativeSensors.ambientTemperature}
             />
           </View>
         </ScrollView>

@@ -1,64 +1,18 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import { colors } from "../theme/color";
+import type { SystemCardsModel, SystemRefreshModel } from "./useSystemStatus";
 
 type SystemCardsProps = {
-  deviceBrand: string;
-  deviceModel: string;
-  deviceManufacturer: string;
-  deviceName: string;
-  deviceProduct: string;
-  deviceHardware: string;
-  deviceBoard: string;
-
-  androidVersion: string;
-  apiLevel: string;
-  codename: string;
-  buildId: string;
-  buildDisplay: string;
-  incrementalVersion: string;
-  systemUiVersion: string;
-
-  resolution: string;
-  densityDpi: string;
-  physicalSize: string;
-  refreshRate: string;
-  rotationOrientation: string;
-  displayCutout: string;
-
-  totalRam: string;
-  availableRam: string;
-  memoryClass: string;
-  largeMemoryClass: string;
-  cpuAbiList: string;
-  numberOfCores: string;
-
-  totalInternalStorage: string;
-  freeSpace: string;
-  usedPercent: string;
-  sdCardCapacity: string;
-
-  deviceSecureLockStatus: string;
-  fingerprintSensorPresence: string;
-  emulatorDetection: string;
-  rootDetection: string;
-  bootloaderStatus: string;
-  secureSettingsAvailability: string;
-
-  localeLanguage: string;
-  region: string;
-  timezoneId: string;
-  clockFormat: string;
-
-  refreshing: boolean;
-  onRefresh: () => void | Promise<void>;
+  cards: SystemCardsModel;
+  refresh: SystemRefreshModel;
 };
 
 type DetailRowProps = {
@@ -73,50 +27,18 @@ const DetailRow = ({ label, value }: DetailRowProps) => (
   </View>
 );
 
-export const SystemCards = ({
-  deviceBrand,
-  deviceModel,
-  deviceManufacturer,
-  deviceName,
-  deviceProduct,
-  deviceHardware,
-  deviceBoard,
-  androidVersion,
-  apiLevel,
-  codename,
-  buildId,
-  buildDisplay,
-  incrementalVersion,
-  systemUiVersion,
-  resolution,
-  densityDpi,
-  physicalSize,
-  refreshRate,
-  rotationOrientation,
-  displayCutout,
-  totalRam,
-  availableRam,
-  memoryClass,
-  largeMemoryClass,
-  cpuAbiList,
-  numberOfCores,
-  totalInternalStorage,
-  freeSpace,
-  usedPercent,
-  sdCardCapacity,
-  deviceSecureLockStatus,
-  fingerprintSensorPresence,
-  emulatorDetection,
-  rootDetection,
-  bootloaderStatus,
-  secureSettingsAvailability,
-  localeLanguage,
-  region,
-  timezoneId,
-  clockFormat,
-  refreshing,
-  onRefresh,
-}: SystemCardsProps) => {
+export const SystemCards = ({ cards, refresh }: SystemCardsProps) => {
+  const {
+    summary,
+    device,
+    software,
+    display,
+    performance,
+    storage,
+    security,
+    regionAndTime,
+  } = cards;
+
   return (
     <View style={styles.cardsSection}>
       <View style={styles.panel}>
@@ -124,7 +46,10 @@ export const SystemCards = ({
           contentContainerStyle={styles.panelContent}
           showsVerticalScrollIndicator
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            <RefreshControl
+              refreshing={refresh.refreshing}
+              onRefresh={refresh.onRefresh}
+            />
           }
         >
           <View style={styles.headerRow}>
@@ -144,11 +69,13 @@ export const SystemCards = ({
           <View style={styles.quickStatsRow}>
             <View style={[styles.quickStatCard, styles.quickStatPrimary]}>
               <Text style={styles.quickStatLabel}>Android Version</Text>
-              <Text style={styles.quickStatValue}>{androidVersion}</Text>
+              <Text style={styles.quickStatValue}>
+                {summary.androidVersion}
+              </Text>
             </View>
             <View style={[styles.quickStatCard, styles.quickStatSecondary]}>
               <Text style={styles.quickStatLabel}>Device</Text>
-              <Text style={styles.quickStatValue}>{deviceModel}</Text>
+              <Text style={styles.quickStatValue}>{summary.device}</Text>
             </View>
           </View>
 
@@ -161,13 +88,13 @@ export const SystemCards = ({
               />
               <Text style={styles.sectionTitle}>Device</Text>
             </View>
-            <DetailRow label="Brand" value={deviceBrand} />
-            <DetailRow label="Model" value={deviceModel} />
-            <DetailRow label="Manufacturer" value={deviceManufacturer} />
-            <DetailRow label="Device" value={deviceName} />
-            <DetailRow label="Product" value={deviceProduct} />
-            <DetailRow label="Hardware" value={deviceHardware} />
-            <DetailRow label="Board" value={deviceBoard} />
+            <DetailRow label="Brand" value={device.brand} />
+            <DetailRow label="Model" value={device.model} />
+            <DetailRow label="Manufacturer" value={device.manufacturer} />
+            <DetailRow label="Device" value={device.name} />
+            <DetailRow label="Product" value={device.product} />
+            <DetailRow label="Hardware" value={device.hardware} />
+            <DetailRow label="Board" value={device.board} />
           </View>
 
           <View style={styles.sectionCard}>
@@ -179,13 +106,22 @@ export const SystemCards = ({
               />
               <Text style={styles.sectionTitle}>Software</Text>
             </View>
-            <DetailRow label="Android Version" value={androidVersion} />
-            <DetailRow label="API Level" value={apiLevel} />
-            <DetailRow label="Codename" value={codename} />
-            <DetailRow label="Build ID" value={buildId} />
-            <DetailRow label="Build Display" value={buildDisplay} />
-            <DetailRow label="Incremental Version" value={incrementalVersion} />
-            <DetailRow label="System UI Version" value={systemUiVersion} />
+            <DetailRow
+              label="Android Version"
+              value={software.androidVersion}
+            />
+            <DetailRow label="API Level" value={software.apiLevel} />
+            <DetailRow label="Codename" value={software.codename} />
+            <DetailRow label="Build ID" value={software.buildId} />
+            <DetailRow label="Build Display" value={software.buildDisplay} />
+            <DetailRow
+              label="Incremental Version"
+              value={software.incrementalVersion}
+            />
+            <DetailRow
+              label="System UI Version"
+              value={software.systemUiVersion}
+            />
           </View>
 
           <View style={styles.sectionCard}>
@@ -197,12 +133,15 @@ export const SystemCards = ({
               />
               <Text style={styles.sectionTitle}>Display</Text>
             </View>
-            <DetailRow label="Resolution" value={resolution} />
-            <DetailRow label="Density DPI" value={densityDpi} />
-            <DetailRow label="Physical Size / Diagonal" value={physicalSize} />
-            <DetailRow label="Refresh Rate" value={refreshRate} />
-            <DetailRow label="Orientation" value={rotationOrientation} />
-            <DetailRow label="Display Cutout" value={displayCutout} />
+            <DetailRow label="Resolution" value={display.resolution} />
+            <DetailRow label="Density DPI" value={display.densityDpi} />
+            <DetailRow
+              label="Physical Size / Diagonal"
+              value={display.physicalSize}
+            />
+            <DetailRow label="Refresh Rate" value={display.refreshRate} />
+            <DetailRow label="Orientation" value={display.orientation} />
+            <DetailRow label="Display Cutout" value={display.cutout} />
           </View>
 
           <View style={styles.sectionCard}>
@@ -214,12 +153,18 @@ export const SystemCards = ({
               />
               <Text style={styles.sectionTitle}>Performance</Text>
             </View>
-            <DetailRow label="Total RAM" value={totalRam} />
-            <DetailRow label="Available RAM" value={availableRam} />
-            <DetailRow label="Memory Class" value={memoryClass} />
-            <DetailRow label="Large Memory Class" value={largeMemoryClass} />
-            <DetailRow label="CPU ABI List" value={cpuAbiList} />
-            <DetailRow label="Number of Cores" value={numberOfCores} />
+            <DetailRow label="Total RAM" value={performance.totalRam} />
+            <DetailRow label="Available RAM" value={performance.availableRam} />
+            <DetailRow label="Memory Class" value={performance.memoryClass} />
+            <DetailRow
+              label="Large Memory Class"
+              value={performance.largeMemoryClass}
+            />
+            <DetailRow label="CPU ABI List" value={performance.cpuAbiList} />
+            <DetailRow
+              label="Number of Cores"
+              value={performance.numberOfCores}
+            />
           </View>
 
           <View style={styles.sectionCard}>
@@ -233,11 +178,14 @@ export const SystemCards = ({
             </View>
             <DetailRow
               label="Total Internal Storage"
-              value={totalInternalStorage}
+              value={storage.totalInternalStorage}
             />
-            <DetailRow label="Free Space" value={freeSpace} />
-            <DetailRow label="Used %" value={usedPercent} />
-            <DetailRow label="SD Card Capacity" value={sdCardCapacity} />
+            <DetailRow label="Free Space" value={storage.freeSpace} />
+            <DetailRow label="Used %" value={storage.usedPercent} />
+            <DetailRow
+              label="SD Card Capacity"
+              value={storage.sdCardCapacity}
+            />
           </View>
 
           <View style={styles.sectionCard}>
@@ -251,18 +199,24 @@ export const SystemCards = ({
             </View>
             <DetailRow
               label="Device Secure Lock Status"
-              value={deviceSecureLockStatus}
+              value={security.deviceSecureLockStatus}
             />
             <DetailRow
               label="Fingerprint Sensor Presence"
-              value={fingerprintSensorPresence}
+              value={security.fingerprintSensorPresence}
             />
-            <DetailRow label="Emulator Detection" value={emulatorDetection} />
-            <DetailRow label="Root Detection" value={rootDetection} />
-            <DetailRow label="Bootloader Status" value={bootloaderStatus} />
+            <DetailRow
+              label="Emulator Detection"
+              value={security.emulatorDetection}
+            />
+            <DetailRow label="Root Detection" value={security.rootDetection} />
+            <DetailRow
+              label="Bootloader Status"
+              value={security.bootloaderStatus}
+            />
             <DetailRow
               label="Secure Settings Availability"
-              value={secureSettingsAvailability}
+              value={security.secureSettingsAvailability}
             />
           </View>
 
@@ -275,10 +229,13 @@ export const SystemCards = ({
               />
               <Text style={styles.sectionTitle}>Region & Time</Text>
             </View>
-            <DetailRow label="Locale / Language" value={localeLanguage} />
-            <DetailRow label="Region" value={region} />
-            <DetailRow label="Timezone ID" value={timezoneId} />
-            <DetailRow label="Clock Format" value={clockFormat} />
+            <DetailRow
+              label="Locale / Language"
+              value={regionAndTime.localeLanguage}
+            />
+            <DetailRow label="Region" value={regionAndTime.region} />
+            <DetailRow label="Timezone ID" value={regionAndTime.timezoneId} />
+            <DetailRow label="Clock Format" value={regionAndTime.clockFormat} />
           </View>
         </ScrollView>
       </View>

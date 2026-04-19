@@ -11,16 +11,19 @@ const Page = () => {
   return (
     <View style={styles.container}>
       <BatteryRing
-        progress={batteryStatus.batteryLevelProgress}
-        levelLabel={batteryStatus.batteryLevelLabel}
-        statusLabel={batteryStatus.batteryStatusLabel}
-        ringColorKey={batteryStatus.batteryRingColorKey}
-        isCharging={batteryStatus.isCharging}
+        progress={batteryStatus.ring.progress}
+        levelLabel={batteryStatus.ring.levelLabel}
+        statusLabel={batteryStatus.ring.statusLabel}
+        ringColorKey={batteryStatus.ring.ringColorKey}
+        isCharging={batteryStatus.ring.isCharging}
         size={250}
         strokeWidth={13}
       />
 
-      <BatteryCards {...batteryStatus} />
+      <BatteryCards
+        cards={batteryStatus.cards}
+        refresh={batteryStatus.refresh}
+      />
     </View>
   );
 };

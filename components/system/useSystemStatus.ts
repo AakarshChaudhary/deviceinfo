@@ -33,6 +33,72 @@ type NativeSystemDetails = {
   clockFormat?: string | null;
 };
 
+export type SystemCardsModel = {
+  summary: {
+    androidVersion: string;
+    device: string;
+  };
+  device: {
+    brand: string;
+    model: string;
+    manufacturer: string;
+    name: string;
+    product: string;
+    hardware: string;
+    board: string;
+  };
+  software: {
+    androidVersion: string;
+    apiLevel: string;
+    codename: string;
+    buildId: string;
+    buildDisplay: string;
+    incrementalVersion: string;
+    systemUiVersion: string;
+  };
+  display: {
+    resolution: string;
+    densityDpi: string;
+    physicalSize: string;
+    refreshRate: string;
+    orientation: string;
+    cutout: string;
+  };
+  performance: {
+    totalRam: string;
+    availableRam: string;
+    memoryClass: string;
+    largeMemoryClass: string;
+    cpuAbiList: string;
+    numberOfCores: string;
+  };
+  storage: {
+    totalInternalStorage: string;
+    freeSpace: string;
+    usedPercent: string;
+    sdCardCapacity: string;
+  };
+  security: {
+    deviceSecureLockStatus: string;
+    fingerprintSensorPresence: string;
+    emulatorDetection: string;
+    rootDetection: string;
+    bootloaderStatus: string;
+    secureSettingsAvailability: string;
+  };
+  regionAndTime: {
+    localeLanguage: string;
+    region: string;
+    timezoneId: string;
+    clockFormat: string;
+  };
+};
+
+export type SystemRefreshModel = {
+  refreshing: boolean;
+  onRefresh: () => Promise<void>;
+};
+
 const systemInfoModule = NativeModules.SystemInfoModule as {
   getSystemDetails?: () => Promise<NativeSystemDetails>;
 };
@@ -212,55 +278,74 @@ export const useSystemStatus = () => {
     load();
   }, [load]);
 
-  return {
-    deviceBrand,
-    deviceModel,
-    deviceManufacturer,
-    deviceName,
-    deviceProduct,
-    deviceHardware,
-    deviceBoard,
+  const cards: SystemCardsModel = {
+    summary: {
+      androidVersion,
+      device: deviceModel,
+    },
+    device: {
+      brand: deviceBrand,
+      model: deviceModel,
+      manufacturer: deviceManufacturer,
+      name: deviceName,
+      product: deviceProduct,
+      hardware: deviceHardware,
+      board: deviceBoard,
+    },
+    software: {
+      androidVersion,
+      apiLevel,
+      codename,
+      buildId,
+      buildDisplay,
+      incrementalVersion,
+      systemUiVersion,
+    },
+    display: {
+      resolution,
+      densityDpi,
+      physicalSize,
+      refreshRate,
+      orientation: rotationOrientation,
+      cutout: displayCutout,
+    },
+    performance: {
+      totalRam,
+      availableRam,
+      memoryClass,
+      largeMemoryClass,
+      cpuAbiList,
+      numberOfCores,
+    },
+    storage: {
+      totalInternalStorage,
+      freeSpace,
+      usedPercent,
+      sdCardCapacity,
+    },
+    security: {
+      deviceSecureLockStatus,
+      fingerprintSensorPresence,
+      emulatorDetection,
+      rootDetection,
+      bootloaderStatus,
+      secureSettingsAvailability,
+    },
+    regionAndTime: {
+      localeLanguage,
+      region,
+      timezoneId,
+      clockFormat,
+    },
+  };
 
-    androidVersion,
-    apiLevel,
-    codename,
-    buildId,
-    buildDisplay,
-    incrementalVersion,
-    systemUiVersion,
-
-    resolution,
-    densityDpi,
-    physicalSize,
-    refreshRate,
-    rotationOrientation,
-    displayCutout,
-
-    totalRam,
-    availableRam,
-    memoryClass,
-    largeMemoryClass,
-    cpuAbiList,
-    numberOfCores,
-
-    totalInternalStorage,
-    freeSpace,
-    usedPercent,
-    sdCardCapacity,
-
-    deviceSecureLockStatus,
-    fingerprintSensorPresence,
-    emulatorDetection,
-    rootDetection,
-    bootloaderStatus,
-    secureSettingsAvailability,
-
-    localeLanguage,
-    region,
-    timezoneId,
-    clockFormat,
-
+  const refresh: SystemRefreshModel = {
     refreshing,
     onRefresh,
+  };
+
+  return {
+    cards,
+    refresh,
   };
 };

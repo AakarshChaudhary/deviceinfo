@@ -26,6 +26,53 @@ type NativeExtraSensorDetails = {
   ambientTemperatureSensor?: string | null;
 };
 
+export type SensorsCardsModel = {
+  summary: {
+    statusLabel: string;
+    availableSensors: string;
+    samplingRate: string;
+  };
+  accelerometer: {
+    availability: string;
+    motionState: string;
+    netAcceleration: string;
+    deviceTilt: string;
+  };
+  gyroscope: {
+    availability: string;
+    rotationSpeed: string;
+    stability: string;
+  };
+  magnetometer: {
+    availability: string;
+    heading: string;
+    direction: string;
+    fieldStrength: string;
+  };
+  barometer: {
+    availability: string;
+    pressure: string;
+    estimatedAltitude: string;
+    pressureLevel: string;
+    samplingRate: string;
+  };
+  nativeSensors: {
+    proximity: string;
+    ambientLight: string;
+    stepCounter: string;
+    rotationVector: string;
+    gravity: string;
+    linearAcceleration: string;
+    relativeHumidity: string;
+    ambientTemperature: string;
+  };
+};
+
+export type SensorsRefreshModel = {
+  refreshing: boolean;
+  onRefresh: () => Promise<void>;
+};
+
 const sensorInfoModule = NativeModules.SensorInfoModule as {
   getSensorDetails?: () => Promise<NativeExtraSensorDetails>;
 };
@@ -406,40 +453,56 @@ export const useSensorsStatus = () => {
         : "Partial";
   const headingDegrees = getHeadingDegrees(magnetometer);
 
-  return {
-    statusLabel,
-    availableSensors: `${availableCount}/${totalSensors}`,
-    samplingRate: `${SENSOR_INTERVAL_MS} ms`,
+  const samplingRate = `${SENSOR_INTERVAL_MS} ms`;
+  const cards: SensorsCardsModel = {
+    summary: {
+      statusLabel,
+      availableSensors: `${availableCount}/${totalSensors}`,
+      samplingRate,
+    },
+    accelerometer: {
+      availability: accelerometerAvailability,
+      motionState: getMotionState(accelerometer),
+      netAcceleration: formatMagnitude(accelerometer, "g"),
+      deviceTilt: getDeviceTilt(accelerometer),
+    },
+    gyroscope: {
+      availability: gyroscopeAvailability,
+      rotationSpeed: getRotationSpeed(gyroscope),
+      stability: getStabilityState(gyroscope),
+    },
+    magnetometer: {
+      availability: magnetometerAvailability,
+      heading: formatHeading(headingDegrees),
+      direction: getCardinalDirection(headingDegrees),
+      fieldStrength: formatMagnitude(magnetometer, "uT"),
+    },
+    barometer: {
+      availability: barometerAvailability,
+      pressure: formatValue(barometer?.pressure, "hPa", 2),
+      estimatedAltitude: getEstimatedAltitude(barometer?.pressure),
+      pressureLevel: getPressureLevel(barometer?.pressure),
+      samplingRate,
+    },
+    nativeSensors: {
+      proximity: proximitySensor,
+      ambientLight: ambientLightSensor,
+      stepCounter: stepCounterSensor,
+      rotationVector: rotationVectorSensor,
+      gravity: gravitySensor,
+      linearAcceleration: linearAccelerationSensor,
+      relativeHumidity: relativeHumiditySensor,
+      ambientTemperature: ambientTemperatureSensor,
+    },
+  };
 
-    accelerometerAvailability,
-    motionState: getMotionState(accelerometer),
-    deviceTilt: getDeviceTilt(accelerometer),
-    accelerometerMagnitude: formatMagnitude(accelerometer, "g"),
-
-    gyroscopeAvailability,
-    rotationSpeed: getRotationSpeed(gyroscope),
-    stabilityState: getStabilityState(gyroscope),
-
-    magnetometerAvailability,
-    compassHeading: formatHeading(headingDegrees),
-    compassDirection: getCardinalDirection(headingDegrees),
-    magneticFieldStrength: formatMagnitude(magnetometer, "uT"),
-
-    barometerAvailability,
-    barometricPressure: formatValue(barometer?.pressure, "hPa", 2),
-    estimatedAltitude: getEstimatedAltitude(barometer?.pressure),
-    pressureLevel: getPressureLevel(barometer?.pressure),
-
-    proximitySensor,
-    ambientLightSensor,
-    stepCounterSensor,
-    rotationVectorSensor,
-    gravitySensor,
-    linearAccelerationSensor,
-    relativeHumiditySensor,
-    ambientTemperatureSensor,
-
+  const refresh: SensorsRefreshModel = {
     refreshing,
     onRefresh,
+  };
+
+  return {
+    cards,
+    refresh,
   };
 };

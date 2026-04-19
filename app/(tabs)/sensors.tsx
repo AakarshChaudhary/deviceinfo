@@ -8,7 +8,10 @@ const Page = () => {
 
   return (
     <View style={styles.container}>
-      <SensorsCards {...sensorsStatus} />
+      <SensorsCards
+        cards={sensorsStatus.cards}
+        refresh={sensorsStatus.refresh}
+      />
     </View>
   );
 };

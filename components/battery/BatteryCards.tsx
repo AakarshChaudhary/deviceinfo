@@ -8,23 +8,14 @@ import {
   View,
 } from "react-native";
 import colors from "../theme/color";
+import type {
+  BatteryCardsModel,
+  BatteryRefreshModel,
+} from "./useBatteryStatus";
 
 type BatteryCardsProps = {
-  batteryManufacturer: string;
-  batteryTechnology: string;
-  batteryTemperature: string;
-  batteryVoltage: string;
-  batteryCapacity: string;
-  chargingSpeed: string;
-  speedLabel: string;
-  estimatedTimeLabel: string;
-  estimatedTime: string;
-  chargingType: string;
-  batteryHealth: string;
-  batteryHealthTone: "good" | "warning";
-  powerSavingStatus: string;
-  refreshing: boolean;
-  onRefresh: () => void | Promise<void>;
+  cards: BatteryCardsModel;
+  refresh: BatteryRefreshModel;
 };
 
 type DetailRowProps = {
@@ -39,25 +30,10 @@ const DetailRow = ({ label, value }: DetailRowProps) => (
   </View>
 );
 
-export const BatteryCards = ({
-  batteryManufacturer,
-  batteryTechnology,
-  batteryTemperature,
-  batteryVoltage,
-  batteryCapacity,
-  chargingSpeed,
-  speedLabel,
-  estimatedTimeLabel,
-  estimatedTime,
-  chargingType,
-  batteryHealth,
-  batteryHealthTone,
-  powerSavingStatus,
-  refreshing,
-  onRefresh,
-}: BatteryCardsProps) => {
+export const BatteryCards = ({ cards, refresh }: BatteryCardsProps) => {
+  const { overview, charging, condition, details } = cards;
   const healthColor =
-    batteryHealthTone === "good" ? colors.icon.blue : colors.icon.orange;
+    condition.healthTone === "good" ? colors.icon.blue : colors.icon.orange;
 
   return (
     <View style={styles.cardsSection}>
@@ -66,7 +42,10 @@ export const BatteryCards = ({
           contentContainerStyle={styles.panelContent}
           showsVerticalScrollIndicator
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            <RefreshControl
+              refreshing={refresh.refreshing}
+              onRefresh={refresh.onRefresh}
+            />
           }
         >
           <View style={styles.headerRow}>
@@ -85,12 +64,18 @@ export const BatteryCards = ({
 
           <View style={styles.quickStatsRow}>
             <View style={[styles.quickStatCard, styles.quickStatPrimary]}>
-              <Text style={styles.quickStatLabel}>{speedLabel}</Text>
-              <Text style={styles.quickStatValue}>{chargingSpeed}</Text>
+              <Text style={styles.quickStatLabel}>{overview.speedLabel}</Text>
+              <Text style={styles.quickStatValue}>
+                {overview.chargingSpeed}
+              </Text>
             </View>
             <View style={[styles.quickStatCard, styles.quickStatSecondary]}>
-              <Text style={styles.quickStatLabel}>{estimatedTimeLabel}</Text>
-              <Text style={styles.quickStatValue}>{estimatedTime}</Text>
+              <Text style={styles.quickStatLabel}>
+                {overview.estimatedTimeLabel}
+              </Text>
+              <Text style={styles.quickStatValue}>
+                {overview.estimatedTime}
+              </Text>
             </View>
           </View>
 
@@ -99,8 +84,11 @@ export const BatteryCards = ({
               <Ionicons name="flash" size={14} color={colors.icon.yellow} />
               <Text style={styles.sectionTitle}>Charging</Text>
             </View>
-            <DetailRow label="Power Source" value={chargingType} />
-            <DetailRow label="Power Saving" value={powerSavingStatus} />
+            <DetailRow label="Power Source" value={charging.powerSource} />
+            <DetailRow
+              label="Power Saving"
+              value={charging.powerSavingStatus}
+            />
           </View>
 
           <View style={styles.sectionCard}>
@@ -108,10 +96,13 @@ export const BatteryCards = ({
               <Ionicons name="fitness" size={14} color={healthColor} />
               <Text style={styles.sectionTitle}>Battery Condition</Text>
             </View>
-            <DetailRow label="Health" value={batteryHealth} />
-            <DetailRow label="Temperature" value={batteryTemperature} />
-            <DetailRow label="Voltage" value={batteryVoltage} />
-            <DetailRow label="Estimated Capacity" value={batteryCapacity} />
+            <DetailRow label="Health" value={condition.health} />
+            <DetailRow label="Temperature" value={condition.temperature} />
+            <DetailRow label="Voltage" value={condition.voltage} />
+            <DetailRow
+              label="Estimated Capacity"
+              value={condition.estimatedCapacity}
+            />
           </View>
 
           <View style={styles.sectionCard}>
@@ -119,8 +110,8 @@ export const BatteryCards = ({
               <Ionicons name="leaf" size={14} color={colors.icon.green} />
               <Text style={styles.sectionTitle}>Battery Details</Text>
             </View>
-            <DetailRow label="Manufacturer" value={batteryManufacturer} />
-            <DetailRow label="Technology" value={batteryTechnology} />
+            <DetailRow label="Manufacturer" value={details.manufacturer} />
+            <DetailRow label="Technology" value={details.technology} />
           </View>
         </ScrollView>
       </View>
