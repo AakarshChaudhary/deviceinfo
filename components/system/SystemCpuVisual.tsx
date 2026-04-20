@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import Svg, { Circle, G, Line, Rect, Text as SvgText } from "react-native-svg";
 import { colors } from "../theme/color";
 
 type SystemCpuVisualProps = {
@@ -9,19 +8,40 @@ type SystemCpuVisualProps = {
   size?: number;
 };
 
+type CoreItem = {
+  id: number;
+  mhz: number;
+  level: number;
+};
+
 const CORE_COUNT = 8;
 
-const getCorePoints = (size: number, radius: number, coreCount: number) => {
-  const center = size / 2;
-
-  return Array.from({ length: coreCount }, (_, index) => {
-    const angle = (Math.PI * 2 * index) / coreCount - Math.PI / 2;
-
-    return {
-      x: center + radius * Math.cos(angle),
-      y: center + radius * Math.sin(angle),
-    };
+const getCoreList = (frequencies: number[]) => {
+  const coreCount = frequencies.length > 0 ? frequencies.length : CORE_COUNT;
+  const values = Array.from({ length: coreCount }, (_, index) => {
+    const value = frequencies[index] ?? 0;
+    return value > 0 ? value : 0;
   });
+  const maxValue = Math.max(...values, 1);
+
+  return values.map((mhz, index) => {
+    const level = mhz > 0 ? Math.max(mhz / maxValue, 0.12) : 0.08;
+    return {
+      id: index + 1,
+      mhz,
+      level,
+    } as CoreItem;
+  });
+};
+
+const getAverageFrequencyText = (cores: CoreItem[]) => {
+  const activeCores = cores.filter((core) => core.mhz > 0);
+  if (activeCores.length === 0) {
+    return "Unknown";
+  }
+
+  const total = activeCores.reduce((sum, core) => sum + core.mhz, 0);
+  return `${Math.round(total / activeCores.length)} MHz`;
 };
 
 export const SystemCpuVisual = ({
@@ -29,95 +49,71 @@ export const SystemCpuVisual = ({
   coreFrequenciesMhz,
   size = 250,
 }: SystemCpuVisualProps) => {
-  const coreCount =
-    coreFrequenciesMhz.length > 0 ? coreFrequenciesMhz.length : CORE_COUNT;
-  const center = size / 2;
-  const chipWidth = size * 0.41;
-  const chipHeight = size * 0.24;
-  const coreSize = size * 0.21;
-  const orbitRadius = center - coreSize / 2 - 1;
-
-  const corePoints = useMemo(
-    () => getCorePoints(size, orbitRadius, coreCount),
-    [size, orbitRadius, coreCount],
+  const cores = useMemo(
+    () => getCoreList(coreFrequenciesMhz),
+    [coreFrequenciesMhz],
   );
-
-  const label = cpuBrandFamily.trim() || "Unknown CPU";
+  const averageFrequency = useMemo(
+    () => getAverageFrequencyText(cores),
+    [cores],
+  );
+  const chipLabel = cpuBrandFamily.trim() || "Unknown CPU";
+  const chipIconSize = Math.max(42, Math.min(58, size * 0.22));
 
   return (
     <View style={styles.container}>
-      <View style={[styles.graphArea, { width: size, height: size }]}>
-        <Svg width={size} height={size}>
-          <Circle
-            cx={center}
-            cy={center}
-            r={size * 0.34}
-            fill={colors.card.base}
-          />
-
-          {corePoints.map((point, index) => (
-            <G key={`core-${index}`}>
-              <Line
-                x1={center}
-                y1={center}
-                x2={point.x}
-                y2={point.y}
-                stroke={colors.border}
-                strokeWidth={1.1}
-              />
-              <Rect
-                x={point.x - coreSize / 2}
-                y={point.y - coreSize / 2}
-                width={coreSize}
-                height={coreSize}
-                rx={coreSize * 0.2}
-                fill={colors.surface.tintBlue}
-                stroke={colors.icon.blue}
-                strokeWidth={1.4}
-              />
-              <SvgText
-                x={point.x}
-                y={point.y + coreSize * 0.1}
-                fill={colors.text.primary}
-                fontSize={coreSize * 0.18}
-                fontWeight="700"
-                textAnchor="middle"
-              >
-                {coreFrequenciesMhz[index] > 0
-                  ? `${coreFrequenciesMhz[index]} MHz`
-                  : "--"}
-              </SvgText>
-            </G>
-          ))}
-
-          <Rect
-            x={center - chipWidth / 2}
-            y={center - chipHeight / 2}
-            width={chipWidth}
-            height={chipHeight}
-            rx={16}
-            fill={colors.surface.tintIndigo}
-            stroke={colors.icon.blue}
-            strokeWidth={1.5}
-          />
-        </Svg>
-
+      <View style={styles.headerCard}>
         <View
           style={[
-            styles.chipLabel,
+            styles.chipIcon,
             {
-              left: center - chipWidth / 2,
-              top: center - chipHeight / 2,
-              width: chipWidth,
-              height: chipHeight,
+              width: chipIconSize,
+              height: chipIconSize,
+              borderRadius: chipIconSize * 0.22,
             },
           ]}
         >
-          <Text style={styles.labelTitle}>CPU</Text>
-          <Text numberOfLines={2} style={styles.labelValue}>
-            {label}
-          </Text>
+          <View style={styles.chipIconInner} />
         </View>
+
+        <View style={styles.headerTextContainer}>
+          <Text style={styles.headerTitle}>CPU</Text>
+          <Text numberOfLines={1} style={styles.cpuName}>
+            {chipLabel}
+          </Text>
+          <Text
+            style={styles.headerMeta}
+          >{`${cores.length} cores | Avg ${averageFrequency}`}</Text>
+        </View>
+      </View>
+
+      <View style={styles.grid}>
+        {cores.map((core) => (
+          <View key={`core-${core.id}`} style={styles.coreCardSlot}>
+            <View style={styles.coreCard}>
+              <View style={styles.coreRow}>
+                <Text style={styles.coreLabel}>{`Core ${core.id}`}</Text>
+                <Text style={styles.coreValue}>
+                  {core.mhz > 0 ? `${core.mhz} MHz` : "--"}
+                </Text>
+              </View>
+
+              <View style={styles.track}>
+                <View
+                  style={[
+                    styles.fill,
+                    {
+                      width: `${Math.round(core.level * 100)}%`,
+                      backgroundColor:
+                        core.mhz > 0 ? colors.icon.blue : colors.text.muted,
+                      opacity: core.mhz > 0 ? 1 : 0.5,
+                    },
+                  ]}
+                />
+              </View>
+            </View>
+          </View>
+        ))}
       </View>
     </View>
   );
@@ -125,30 +121,97 @@ export const SystemCpuVisual = ({
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
-    justifyContent: "center",
+    width: "100%",
   },
-  graphArea: {
+  headerCard: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-  },
-  chipLabel: {
-    position: "absolute",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: colors.card.elevated,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: colors.border,
     paddingHorizontal: 10,
+    paddingVertical: 5,
   },
-  labelTitle: {
-    fontSize: 10,
-    fontWeight: "700",
-    color: colors.text.tertiary,
+  chipIcon: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.surface.tintIndigo,
+    borderWidth: 1,
+    borderColor: colors.icon.blue,
+    marginRight: 12,
+  },
+  chipIconInner: {
+    width: "48%",
+    height: "48%",
+    borderRadius: 6,
+    backgroundColor: colors.icon.blue,
+    opacity: 0.24,
+  },
+  headerTextContainer: {
+    flex: 1,
+  },
+  headerTitle: {
+    fontSize: 11,
+    fontWeight: "800",
     letterSpacing: 1,
+    color: colors.icon.blue,
   },
-  labelValue: {
-    marginTop: 6,
-    fontSize: 14,
+  cpuName: {
+    marginTop: 2,
+    fontSize: 15,
     fontWeight: "700",
     color: colors.text.primary,
-    textAlign: "center",
+  },
+  headerMeta: {
+    marginTop: 4,
+    fontSize: 12,
+    fontWeight: "600",
+    color: colors.text.tertiary,
+  },
+  grid: {
+    marginTop: 5,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginHorizontal: -4,
+  },
+  coreCardSlot: {
+    width: "50%",
+    paddingHorizontal: 4,
+    paddingVertical: 4,
+  },
+  coreCard: {
+    backgroundColor: colors.card.elevated,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+  },
+  coreRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  coreLabel: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: colors.text.secondary,
+  },
+  coreValue: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: colors.text.primary,
+  },
+  track: {
+    marginTop: 8,
+    height: 7,
+    borderRadius: 999,
+    backgroundColor: colors.surface.tintBlue,
+    overflow: "hidden",
+  },
+  fill: {
+    height: "100%",
+    borderRadius: 999,
   },
 });

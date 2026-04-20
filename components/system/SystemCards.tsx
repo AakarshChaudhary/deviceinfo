@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderColor: colors.border,
-    maxHeight: 440,
+    maxHeight: 365,
   },
   panelContent: {
     paddingBottom: 5,
