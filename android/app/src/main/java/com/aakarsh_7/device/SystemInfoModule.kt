@@ -20,6 +20,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.uimanager.ViewManager
+import java.io.File
 import java.util.Locale
 import java.util.TimeZone
 import kotlin.math.pow
@@ -42,7 +43,10 @@ class SystemInfoModule(private val reactContext: ReactApplicationContext) :
 
       val totalInternalStorage = getTotalInternalStorageBytes()
       val freeInternalStorage = getFreeInternalStorageBytes()
-
+      val cpuBrandInfo = getCpuBrandInfo()
+      val cpuBrand = cpuBrandInfo["manufacturer"] ?: "Unknown"
+      val cpuFamily = cpuBrandInfo["model"] ?: "Unknown"
+      val coreFrequenciesMhz = getCpuCoreFrequenciesMhz()
       val result = Arguments.createMap().apply {
         putString("hardware", cleanText(Build.HARDWARE))
         putString("board", cleanText(Build.BOARD))
@@ -70,6 +74,11 @@ class SystemInfoModule(private val reactContext: ReactApplicationContext) :
         putString("memoryClass", "${activityManager.memoryClass} MB")
         putString("largeMemoryClass", "${activityManager.largeMemoryClass} MB")
         putString("numberOfCores", Runtime.getRuntime().availableProcessors().toString())
+        putString("cpuBrandFamily", buildCpuBrandFamily(cpuBrand, cpuFamily))
+        putArray(
+          "coreFrequenciesMhz",
+          Arguments.createArray().apply { coreFrequenciesMhz.forEach { pushInt(it) } },
+        )
 
         putString("totalInternalStorage", formatBytes(totalInternalStorage))
         putString("freeSpace", formatBytes(freeInternalStorage))
@@ -263,6 +272,63 @@ class SystemInfoModule(private val reactContext: ReactApplicationContext) :
     }
 
     return "Unknown"
+  }
+
+  private fun buildCpuBrandFamily(brand: String, family: String): String {
+    if (brand == "Unknown" && family == "Unknown") return "Unknown"
+    if (brand == "Unknown") return family
+    if (family == "Unknown") return brand
+    if (family.contains(brand, ignoreCase = true)) return family
+    return "$brand $family"
+  }
+
+  private fun getCpuBrandInfo(): Map<String, String> {
+    val map = mutableMapOf<String, String>()
+
+    map["hardware"] = cleanText(Build.HARDWARE)
+    map["board"] = cleanText(Build.BOARD)
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      map["manufacturer"] = cleanText(Build.SOC_MANUFACTURER)
+      map["model"] = cleanText(Build.SOC_MODEL)
+    } else {
+      map["manufacturer"] = "Unknown"
+      map["model"] = "Unknown"
+    }
+
+    return map
+  }
+
+  private fun getCpuCoreFrequenciesMhz(): List<Int> {
+    val cpuDirectories =
+      try {
+        File("/sys/devices/system/cpu")
+          .listFiles()
+          ?.filter { file -> file.isDirectory && file.name.matches(Regex("cpu\\d+")) }
+          ?.sortedBy { file -> file.name.removePrefix("cpu").toIntOrNull() ?: Int.MAX_VALUE }
+      } catch (_: Exception) {
+        null
+      } ?: return emptyList()
+
+    return cpuDirectories.map { cpuDirectory ->
+      val frequencyKHz =
+        readCpuFrequencyKHz(cpuDirectory, "cpufreq/scaling_cur_freq")
+          ?: readCpuFrequencyKHz(cpuDirectory, "cpufreq/cpuinfo_cur_freq")
+          ?: readCpuFrequencyKHz(cpuDirectory, "cpufreq/scaling_max_freq")
+          ?: readCpuFrequencyKHz(cpuDirectory, "cpufreq/cpuinfo_max_freq")
+
+      val frequencyMhz = ((frequencyKHz ?: 0L) / 1000L).toInt()
+      if (frequencyMhz > 0) frequencyMhz else 0
+    }
+  }
+
+  private fun readCpuFrequencyKHz(cpuDirectory: File, relativePath: String): Long? {
+    return try {
+      val rawValue = File(cpuDirectory, relativePath).readText().trim()
+      rawValue.toLongOrNull()?.takeIf { it > 0L }
+    } catch (_: Exception) {
+      null
+    }
   }
 
   private fun getResolution(width: Int, height: Int): String {

@@ -5,6 +5,8 @@ import { NativeModules, Platform } from "react-native";
 type NativeSystemDetails = {
   hardware?: string | null;
   board?: string | null;
+  cpuBrandFamily?: string | null;
+  coreFrequenciesMhz?: number[] | null;
   codename?: string | null;
   incrementalVersion?: string | null;
   systemUiVersion?: string | null;
@@ -94,6 +96,11 @@ export type SystemCardsModel = {
   };
 };
 
+export type SystemCpuVisualModel = {
+  cpuBrandFamily: string;
+  coreFrequenciesMhz: number[];
+};
+
 export type SystemRefreshModel = {
   refreshing: boolean;
   onRefresh: () => Promise<void>;
@@ -129,6 +136,21 @@ const toDisplay = (value: unknown) => {
   }
 
   return String(value);
+};
+
+const toNumberArray = (value: unknown): number[] => {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.map((item) => {
+    const parsed = typeof item === "number" ? item : Number(item);
+    if (!Number.isFinite(parsed) || parsed <= 0) {
+      return 0;
+    }
+
+    return Math.round(parsed);
+  });
 };
 
 const formatName = (value: string | null | undefined) => {
@@ -184,6 +206,8 @@ export const useSystemStatus = () => {
   const [largeMemoryClass, setLargeMemoryClass] = useState("Unknown");
   const [cpuAbiList, setCpuAbiList] = useState("Unknown");
   const [numberOfCores, setNumberOfCores] = useState("Unknown");
+  const [cpuBrandFamily, setCpuBrandFamily] = useState("Unknown");
+  const [coreFrequenciesMhz, setCoreFrequenciesMhz] = useState<number[]>([]);
 
   const [totalInternalStorage, setTotalInternalStorage] = useState("Unknown");
   const [freeSpace, setFreeSpace] = useState("Unknown");
@@ -245,6 +269,8 @@ export const useSystemStatus = () => {
     setLargeMemoryClass(toDisplay(nativeDetails.largeMemoryClass));
     setCpuAbiList(formatCpuArchitectures(Device.supportedCpuArchitectures));
     setNumberOfCores(toDisplay(nativeDetails.numberOfCores));
+    setCpuBrandFamily(toDisplay(nativeDetails.cpuBrandFamily));
+    setCoreFrequenciesMhz(toNumberArray(nativeDetails.coreFrequenciesMhz));
 
     setTotalInternalStorage(toDisplay(nativeDetails.totalInternalStorage));
     setFreeSpace(toDisplay(nativeDetails.freeSpace));
@@ -339,12 +365,18 @@ export const useSystemStatus = () => {
     },
   };
 
+  const visual: SystemCpuVisualModel = {
+    cpuBrandFamily,
+    coreFrequenciesMhz,
+  };
+
   const refresh: SystemRefreshModel = {
     refreshing,
     onRefresh,
   };
 
   return {
+    visual,
     cards,
     refresh,
   };
