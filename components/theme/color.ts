@@ -26,6 +26,7 @@ export const colors = {
   card: {
     base: "#F8FAFC",
     elevated: "#FFFFFF",
+    border: 22,
   },
 
   icon: {
