@@ -91,8 +91,8 @@ export const BatteryRing = ({
   }, [isCharging, pulse]);
 
   const statusText = isCharging ? (
-    <Text style={{ color: colors.text.green }}>
-      <Ionicons name="flash" size={statusFontSize ?? 24} /> {statusLabel}
+    <Text style={styles.chargingStatus}>
+      <Ionicons name="flash" size={statusFontSize ?? 15} /> {statusLabel}
     </Text>
   ) : (
     statusLabel
@@ -162,5 +162,10 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: colors.text.secondary,
     letterSpacing: 1,
+  },
+  chargingStatus: {
+    flexDirection: "row",
+    alignItems: "center",
+    color: colors.text.green,
   },
 });
