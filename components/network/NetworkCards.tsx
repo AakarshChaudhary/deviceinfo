@@ -150,7 +150,7 @@ export const NetworkCards = ({ cards, refresh }: NetworkCardsProps) => {
 const styles = StyleSheet.create({
   cardsSection: {
     width: "90%",
-    marginTop: 20,
+    marginTop: 25,
   },
   panel: {
     backgroundColor: colors.card.base,
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderColor: colors.border,
-    maxHeight: 495,
+    maxHeight: 440,
   },
   panelContent: {
     paddingBottom: 5,
