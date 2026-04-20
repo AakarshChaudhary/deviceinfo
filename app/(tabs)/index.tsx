@@ -1,4 +1,3 @@
-import * as Device from "expo-device";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { BatteryRing } from "../../components/battery/BatteryRing";
@@ -14,17 +13,18 @@ const Page = () => {
   const networkStatus = useNetworkStatus();
   const systemStatus = useSystemStatus();
 
-  const deviceName =
-    Device.deviceName ?? Device.designName ?? Device.modelName ?? "Device";
-
   return (
     <View style={styles.container}>
-      <Text style={styles.greeting}>Hi, {deviceName}</Text>
+      <View style={styles.greetingContainer}>
+        <Text style={styles.greeting}>
+          Hi, {systemStatus.cards.device.name}
+        </Text>
+      </View>
       <View style={styles.cardcontainer}>
         <View style={styles.row}>
           <View style={[styles.card, styles.card1]}>
             <Text style={styles.cardTitle}>Battery</Text>
-            <View style={styles.ringCenter}>
+            <View style={styles.visualCenter}>
               <BatteryRing
                 progress={batteryStatus.ring.progress}
                 levelLabel={batteryStatus.ring.levelLabel}
@@ -40,7 +40,7 @@ const Page = () => {
           </View>
           <View style={[styles.card, styles.card2]}>
             <Text style={styles.cardTitle}>Network</Text>
-            <View style={styles.ringCenter}>
+            <View style={styles.visualCenter}>
               <NetworkQuickVisual
                 networkType={networkStatus.quickVisual.networkType}
                 statusLabel={networkStatus.quickVisual.statusLabel}
@@ -60,7 +60,7 @@ const Page = () => {
         <View style={styles.row}>
           <View style={[styles.card, styles.card3]}>
             <Text style={styles.cardTitle}>System</Text>
-            <View style={styles.ringCenter}>
+            <View style={styles.visualCenter}>
               <SystemQuickVisual
                 cpuBrandFamily={systemStatus.visual.cpuBrandFamily}
                 coreFrequenciesMhz={systemStatus.visual.coreFrequenciesMhz}
@@ -84,7 +84,15 @@ const styles = StyleSheet.create({
   },
   cardcontainer: {
     flex: 1,
-    marginTop: "20%",
+    marginTop: "15%",
+  },
+  greetingContainer: {
+    marginTop: 20,
+    backgroundColor: colors.background,
+    borderRadius: 22,
+    borderColor: colors.border,
+    borderWidth: 1,
+    padding: 18,
   },
   row: {
     flexDirection: "row",
@@ -93,7 +101,6 @@ const styles = StyleSheet.create({
   },
   greeting: {
     alignSelf: "flex-start",
-    marginBottom: 16,
     fontSize: 20,
     fontWeight: "700",
     color: colors.text.primary,
@@ -101,19 +108,16 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.background,
     borderRadius: 22,
-    shadowColor: colors.shadow,
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 4,
-    padding: 18,
+    borderColor: colors.border,
+    borderWidth: 1,
+    padding: 15,
   },
   card1: {
     flex: 1,
     height: 230,
     marginRight: 10,
   },
-  ringCenter: {
+  visualCenter: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",

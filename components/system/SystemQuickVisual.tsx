@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingTop: 10,
-    paddingBottom: 8,
+    paddingBottom: 7,
     paddingHorizontal: 8,
   },
   chipFrame: {
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: colors.card.elevated,
-    marginBottom: 8,
+    marginBottom: 15,
   },
   chipInner: {
     width: 34,
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "center",
     borderRadius: 5,
-    backgroundColor: colors.card.elevated,
+    backgroundColor: colors.surface.tintBlue,
   },
   barFill: {
     width: "100%",
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   cpuName: {
     width: "100%",
-    marginTop: 8,
+    marginTop: 3,
     textAlign: "center",
     fontSize: 14,
     fontWeight: "700",
