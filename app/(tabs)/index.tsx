@@ -5,11 +5,14 @@ import { BatteryRing } from "../../components/battery/BatteryRing";
 import { useBatteryStatus } from "../../components/battery/useBatteryStatus";
 import { NetworkQuickVisual } from "../../components/network/NetworkQuickVisual";
 import { useNetworkStatus } from "../../components/network/useNetworkStatus";
+import { SystemQuickVisual } from "../../components/system/SystemQuickVisual";
+import { useSystemStatus } from "../../components/system/useSystemStatus";
 import { colors } from "../../components/theme/color";
 
 const Page = () => {
   const batteryStatus = useBatteryStatus();
   const networkStatus = useNetworkStatus();
+  const systemStatus = useSystemStatus();
 
   const deviceName =
     Device.deviceName ?? Device.designName ?? Device.modelName ?? "Device";
@@ -55,7 +58,15 @@ const Page = () => {
           </View>
         </View>
         <View style={styles.row}>
-          <View style={[styles.card, styles.card3]} />
+          <View style={[styles.card, styles.card3]}>
+            <Text style={styles.cardTitle}>System</Text>
+            <View style={styles.ringCenter}>
+              <SystemQuickVisual
+                cpuBrandFamily={systemStatus.visual.cpuBrandFamily}
+                coreFrequenciesMhz={systemStatus.visual.coreFrequenciesMhz}
+              />
+            </View>
+          </View>
           <View style={[styles.card, styles.card4]} />
         </View>
       </View>

@@ -176,6 +176,64 @@ const formatTotalMemory = (value: number | null | undefined) => {
   return `${totalMemoryGb.toFixed(2)} GB`;
 };
 
+const formatCpuSeriesName = (raw: string, label: string) => {
+  if (!raw.trim()) return "Unknown";
+  return raw.match(new RegExp(label, "i"))
+    ? raw.replace(new RegExp(label, "i"), label)
+    : `${label} ${raw}`;
+};
+
+const getQualcommCpuName = (raw: string) => {
+  const upper = raw.toUpperCase();
+  const code = upper.match(
+    /\b(SM\d{4,5}(?:-[A-Z0-9]+)?|SDM\d{3,4}|MSM\d{4})\b/,
+  )?.[1];
+  if (!code) return "";
+
+  switch (code) {
+    case "SM7125":
+      return "Snapdragon 720G";
+    case "SM7325":
+      return "Snapdragon 778G";
+    case "SM7325-AE":
+      return "Snapdragon 778G+";
+    default:
+      return `Qualcomm ${code}`;
+  }
+};
+
+const normalizeCpuBrandFamily = (value: string | null | undefined) => {
+  const raw = value?.trim() || "";
+  if (!raw) return "Unknown";
+
+  const upper = raw.toUpperCase();
+  if (upper.includes("SNAPDRAGON"))
+    return formatCpuSeriesName(raw, "Snapdragon");
+  if (upper.includes("DIMENSITY")) return formatCpuSeriesName(raw, "Dimensity");
+  if (upper.includes("HELIO")) return formatCpuSeriesName(raw, "Helio");
+  if (upper.includes("EXYNOS")) return formatCpuSeriesName(raw, "Exynos");
+  if (upper.includes("KIRIN")) return formatCpuSeriesName(raw, "Kirin");
+  if (upper.includes("TENSOR")) return formatCpuSeriesName(raw, "Tensor");
+  if (upper.includes("UNISOC")) return formatCpuSeriesName(raw, "Unisoc");
+  if (
+    upper.includes("MEDIA TEK") ||
+    upper.includes("MEDIATEK") ||
+    upper.startsWith("MT")
+  ) {
+    return formatCpuSeriesName(raw, "MediaTek");
+  }
+
+  if (
+    upper.includes("QTI") ||
+    upper.includes("QUALCOMM") ||
+    upper.match(/\bSM\d{4,5}(?:-[A-Z0-9]+)?\b/)
+  ) {
+    return getQualcommCpuName(raw) || raw;
+  }
+
+  return raw;
+};
+
 export const useSystemStatus = () => {
   const [deviceBrand, setDeviceBrand] = useState("Unknown");
   const [deviceModel, setDeviceModel] = useState("Unknown");
@@ -269,7 +327,9 @@ export const useSystemStatus = () => {
     setLargeMemoryClass(toDisplay(nativeDetails.largeMemoryClass));
     setCpuAbiList(formatCpuArchitectures(Device.supportedCpuArchitectures));
     setNumberOfCores(toDisplay(nativeDetails.numberOfCores));
-    setCpuBrandFamily(toDisplay(nativeDetails.cpuBrandFamily));
+    setCpuBrandFamily(
+      normalizeCpuBrandFamily(toDisplay(nativeDetails.cpuBrandFamily)),
+    );
     setCoreFrequenciesMhz(toNumberArray(nativeDetails.coreFrequenciesMhz));
 
     setTotalInternalStorage(toDisplay(nativeDetails.totalInternalStorage));
