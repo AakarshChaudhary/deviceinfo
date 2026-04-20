@@ -301,7 +301,18 @@ export const useSystemStatus = () => {
   }, [load]);
 
   useEffect(() => {
+    let intervalId: ReturnType<typeof setInterval> | null = null;
+
     load();
+    intervalId = setInterval(() => {
+      load();
+    }, 2000);
+
+    return () => {
+      if (intervalId !== null) {
+        clearInterval(intervalId);
+      }
+    };
   }, [load]);
 
   const cards: SystemCardsModel = {
