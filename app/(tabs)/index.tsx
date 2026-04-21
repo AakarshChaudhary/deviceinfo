@@ -4,6 +4,8 @@ import { BatteryRing } from "../../components/battery/BatteryRing";
 import { useBatteryStatus } from "../../components/battery/useBatteryStatus";
 import { NetworkQuickVisual } from "../../components/network/NetworkQuickVisual";
 import { useNetworkStatus } from "../../components/network/useNetworkStatus";
+import { SensorsQuickVisual } from "../../components/sensors/SensorsQuickVisual";
+import { useSensorsStatus } from "../../components/sensors/useSensorsStatus";
 import { SystemQuickVisual } from "../../components/system/SystemQuickVisual";
 import { useSystemStatus } from "../../components/system/useSystemStatus";
 import { colors } from "../../components/theme/color";
@@ -12,6 +14,7 @@ const Page = () => {
   const batteryStatus = useBatteryStatus();
   const networkStatus = useNetworkStatus();
   const systemStatus = useSystemStatus();
+  const sensorsStatus = useSensorsStatus();
 
   return (
     <View style={styles.container}>
@@ -67,7 +70,12 @@ const Page = () => {
               />
             </View>
           </View>
-          <View style={[styles.card, styles.card4]} />
+          <View style={[styles.card, styles.card4]}>
+            <Text style={styles.cardTitle}>Sensors</Text>
+            <View style={styles.visualCenter}>
+              <SensorsQuickVisual cards={sensorsStatus.cards} compact />
+            </View>
+          </View>
         </View>
       </View>
     </View>
